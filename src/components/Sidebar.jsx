@@ -17,7 +17,7 @@ const Sidebar = () => {
       {/* Sidebar */}
       <div className="w-64 bg-teal-700 text-white flex flex-col md:w-72 lg:w-80 overflow-y-auto"> {/* Sidebar con ancho fijo y scroll si el contenido excede */}
         <div className="p-5">
-          <h1 className="text-xl font-bold">Red 911</h1>
+          <h1 className="text-xl font-bold">ASODI AD</h1>
         </div>
         <ul className="mt-5 flex-grow">
           {/* Redirección al Tablero de Instrumentos */}
@@ -25,7 +25,7 @@ const Sidebar = () => {
             className="py-2 px-5 hover:bg-teal-600 cursor-pointer"
             onClick={() => navigate('/dashboard')}
           >
-            Tablero De Instrumentos
+            Dashboard
           </li>
           
           {/* Redirección a otras páginas */}
