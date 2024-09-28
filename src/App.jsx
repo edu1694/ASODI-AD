@@ -1,12 +1,31 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom"; // Agrega 'Route' a la importación
-import HomePage from './pages/HomePage';
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import HomePage from './pages/HomePage'; // HomePage es el login
 import './index.css'; // Importa el archivo CSS que contiene Tailwind
+import DashboardPage from "./pages/DashboardPage";
+import ProtectedRoute from './components/ProtectedRoute'; // Importa el componente de rutas protegidas
+import NotFoundPage from './pages/NotFoundPage'; // Importa la página de error 404
 
 function App() {
+  const isAuthenticated = localStorage.getItem('isAuthenticated');
+
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<HomePage />} />
+        {/* Si el usuario está autenticado y va a la raíz, redirige al dashboard */}
+        <Route path="/" element={isAuthenticated ? <Navigate to="/dashboard" /> : <HomePage />} />
+        
+        {/* Protegemos la ruta del dashboard */}
+        <Route
+          path="/dashboard"
+          element={
+            <ProtectedRoute>
+              <DashboardPage />
+            </ProtectedRoute>
+          }
+        />
+
+        {/* Página de error 404 */}
+        <Route path="*" element={<NotFoundPage />} />
       </Routes>
     </BrowserRouter>
   );

@@ -5,14 +5,12 @@ export function HomePage() {
   const [correo, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loginError, setLoginError] = useState(null);
-  const [loginSuccess, setLoginSuccess] = useState(false); // Estado para el éxito del login
 
   const handleLogin = async (e) => {
-    e.preventDefault();
-    
+    e.preventDefault(); // Prevenir el comportamiento predeterminado del formulario
+
     if (!correo || !password) {
       setLoginError('Por favor, ingresa tu correo y contraseña');
-      setLoginSuccess(false);
       return;
     }
 
@@ -30,23 +28,21 @@ export function HomePage() {
 
       const usuarios = await response.json();
 
-      // Esto es para verificar que los datos que estás recibiendo sean los correctos
-      console.log("Usuarios retornados por la API: ", usuarios);
-
-      const usuarioEncontrado = usuarios.find(user =>
-        user.correo === correo && user.password === password
+      const usuarioEncontrado = usuarios.find(
+        (user) => user.correo === correo && user.password === password
       );
 
       if (usuarioEncontrado) {
-        setLoginSuccess(true); // Indicar éxito en el inicio de sesión
-        setLoginError(null); // Limpiar el error
+        // Marcar al usuario como autenticado
+        localStorage.setItem('isAuthenticated', 'true');
+        console.log('Inicio de sesión exitoso:', usuarioEncontrado);
+        setLoginError(null);
+        window.location.href = '/dashboard'; // Redirigir al dashboard
       } else {
-        setLoginSuccess(false);
         setLoginError('Usuario no encontrado o contraseña incorrecta');
       }
     } catch (error) {
       console.error('Error de conexión con el servidor:', error);
-      setLoginSuccess(false);
       setLoginError('No se pudo conectar con el servidor');
     }
   };
@@ -57,7 +53,7 @@ export function HomePage() {
         <h2 className="text-4xl font-bold mb-10 text-center text-green-600">Iniciar Sesión</h2>
         <form onSubmit={handleLogin}>
           <div className="mb-8">
-            <label htmlFor="email" className="block text-gray-700 font-medium mb-3 text-lg">
+            <label htmlFor="correo" className="block text-gray-700 font-medium mb-3 text-lg">
               Correo electrónico
             </label>
             <input
@@ -83,7 +79,6 @@ export function HomePage() {
             />
           </div>
           {loginError && <p className="text-red-500 mb-4">{loginError}</p>}
-          {loginSuccess && <p className="text-green-500 mb-4">Inicio de sesión exitoso</p>}
           <div className="flex items-center justify-center">
             <button
               type="submit"
