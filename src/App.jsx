@@ -5,6 +5,9 @@ import DashboardPage from "./pages/DashboardPage";
 import ProtectedRoute from './components/ProtectedRoute'; // Importa el componente de rutas protegidas
 import NotFoundPage from './pages/NotFoundPage'; // Importa la página de error 404
 import AddPacientePage from "./pages/AddPacientePage";
+import AdminPage from "./pages/AdminPage";
+import AddUsuarioADPage from "./pages/AddUsuarioADPage.JSX";
+import SearchUsuarioPage from "./pages/SearchUsuarioPage";
 
 function App() {
   const isAuthenticated = localStorage.getItem('isAuthenticated');
@@ -31,6 +34,30 @@ function App() {
           element={
             <ProtectedRoute>
               <AddPacientePage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin"
+          element={
+            <ProtectedRoute>
+              <AdminPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/add-userad"
+          element={
+            <ProtectedRoute>
+              <AddUsuarioADPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/search-userad"
+          element={
+            <ProtectedRoute>
+              <SearchUsuarioPage />
             </ProtectedRoute>
           }
         />
