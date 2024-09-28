@@ -1,29 +1,29 @@
 import React, { useState } from 'react';
-import { FaExclamationTriangle, FaChevronDown } from 'react-icons/fa'; // Importamos los iconos
-import { useNavigate } from 'react-router-dom'; // Para la redirección
+import { FaExclamationTriangle, FaChevronDown } from 'react-icons/fa';
+import { useNavigate } from 'react-router-dom';
 
 const Sidebar = () => {
   const [open, setOpen] = useState(false);
-  const navigate = useNavigate(); // Hook de navegación para redirigir
+  const navigate = useNavigate();
 
   // Función para cerrar sesión
   const handleLogout = () => {
-    localStorage.removeItem('isAuthenticated'); // Eliminar el estado de autenticación
+    localStorage.removeItem('isAuthenticated');
     navigate('/'); // Redirigir a la página de inicio de sesión
   };
 
   return (
-    <div className="flex">
+    <div className="flex h-screen"> {/* Mantiene el contenido a la altura completa de la pantalla */}
       {/* Sidebar */}
-      <div className="h-screen w-64 bg-teal-700 text-white">
+      <div className="w-64 bg-teal-700 text-white flex flex-col md:w-72 lg:w-80 overflow-y-auto"> {/* Sidebar con ancho fijo y scroll si el contenido excede */}
         <div className="p-5">
           <h1 className="text-xl font-bold">Red 911</h1>
         </div>
-        <ul className="mt-5">
+        <ul className="mt-5 flex-grow">
           {/* Redirección al Tablero de Instrumentos */}
           <li
             className="py-2 px-5 hover:bg-teal-600 cursor-pointer"
-            onClick={() => navigate('/dashboard')} // Redirigir al dashboard
+            onClick={() => navigate('/dashboard')}
           >
             Tablero De Instrumentos
           </li>
@@ -31,14 +31,14 @@ const Sidebar = () => {
           {/* Redirección a otras páginas */}
           <li
             className="py-2 px-5 hover:bg-teal-600 cursor-pointer"
-            onClick={() => navigate('/add-paciente')} // Supuesta página de tickets
+            onClick={() => navigate('/add-paciente')}
           >
             Agregar Paciente
           </li>
           
           <li
             className="py-2 px-5 hover:bg-teal-600 cursor-pointer"
-            onClick={() => navigate('/lista')} // Supuesta página de lista
+            onClick={() => navigate('/lista')}
           >
             Lista
           </li>
@@ -55,23 +55,23 @@ const Sidebar = () => {
             onClick={() => setOpen(!open)}
           >
             <div className="flex items-center">
-              <FaExclamationTriangle className="mr-2" /> {/* Ícono de alerta */}
+              <FaExclamationTriangle className="mr-2" />
               Operaciones De TI
             </div>
-            <FaChevronDown className={`${open ? 'rotate-180' : ''} transition-transform duration-300`} /> {/* Flecha */}
+            <FaChevronDown className={`${open ? 'rotate-180' : ''} transition-transform duration-300`} />
           </li>
 
           {open && (
             <ul className="ml-4">
               <li
                 className="py-2 px-5 hover:bg-teal-600 cursor-pointer"
-                onClick={() => navigate('/submenu1')} // Supuesta página de submenú 1
+                onClick={() => navigate('/submenu1')}
               >
                 Submenú 1
               </li>
               <li
                 className="py-2 px-5 hover:bg-teal-600 cursor-pointer"
-                onClick={() => navigate('/submenu2')} // Supuesta página de submenú 2
+                onClick={() => navigate('/submenu2')}
               >
                 Submenú 2
               </li>
@@ -80,28 +80,28 @@ const Sidebar = () => {
           
           <li
             className="py-2 px-5 hover:bg-teal-600 cursor-pointer"
-            onClick={() => navigate('/activos')} // Supuesta página de activos
+            onClick={() => navigate('/activos')}
           >
             Activos
           </li>
           
           <li
             className="py-2 px-5 hover:bg-teal-600 cursor-pointer"
-            onClick={() => navigate('/informes')} // Supuesta página de informes
+            onClick={() => navigate('/informes')}
           >
             Informes
           </li>
           
           <li
             className="py-2 px-5 hover:bg-teal-600 cursor-pointer"
-            onClick={() => navigate('/admin')} // Supuesta página de administrador
+            onClick={() => navigate('/admin')}
           >
             Administrador
           </li>
         </ul>
 
         {/* Botón de cerrar sesión */}
-        <div className="mt-auto p-5">
+        <div className="p-5">
           <div className="py-2 hover:bg-teal-600 cursor-pointer">Freshchat</div>
           <div className="py-2 hover:bg-teal-600 cursor-pointer">Switcher de Freshworks</div>
           <div

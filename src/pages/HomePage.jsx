@@ -1,13 +1,15 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom'; // Importa useNavigate
 import { baseUrl } from '../api/asodi.api.js';
 
 export function HomePage() {
   const [correo, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loginError, setLoginError] = useState(null);
+  const navigate = useNavigate(); // Crea una instancia de navigate
 
   const handleLogin = async (e) => {
-    e.preventDefault(); // Prevenir el comportamiento predeterminado del formulario
+    e.preventDefault();
 
     if (!correo || !password) {
       setLoginError('Por favor, ingresa tu correo y contraseña');
@@ -27,18 +29,17 @@ export function HomePage() {
       }
 
       const usuarios = await response.json();
-
       const usuarioEncontrado = usuarios.find(
         (user) => user.correo === correo && user.password === password
       );
 
       if (usuarioEncontrado) {
-        // Marcar al usuario como autenticado
         localStorage.setItem('isAuthenticated', 'true');
-        localStorage.setItem('usuario_asodi_ad', usuarioEncontrado.rut); // Guardar el rut del usuario autenticado
-        console.log('Inicio de sesión exitoso:', usuarioEncontrado);
+        await localStorage.setItem('usuario_asodi_ad', usuarioEncontrado.rut_ad);
         setLoginError(null);
-        window.location.href = '/dashboard'; // Redirigir al dashboard
+        
+        // Cambia a navigate en lugar de window.location.href
+        navigate('/dashboard');
       } else {
         setLoginError('Usuario no encontrado o contraseña incorrecta');
       }
