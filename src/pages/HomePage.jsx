@@ -35,6 +35,7 @@ export function HomePage() {
       if (usuarioEncontrado) {
         // Marcar al usuario como autenticado
         localStorage.setItem('isAuthenticated', 'true');
+        localStorage.setItem('usuario_asodi_ad', usuarioEncontrado.rut); // Guardar el rut del usuario autenticado
         console.log('Inicio de sesión exitoso:', usuarioEncontrado);
         setLoginError(null);
         window.location.href = '/dashboard'; // Redirigir al dashboard
