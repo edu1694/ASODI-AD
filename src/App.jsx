@@ -4,6 +4,7 @@ import './index.css'; // Importa el archivo CSS que contiene Tailwind
 import DashboardPage from "./pages/DashboardPage";
 import ProtectedRoute from './components/ProtectedRoute'; // Importa el componente de rutas protegidas
 import NotFoundPage from './pages/NotFoundPage'; // Importa la página de error 404
+import AddPacientePage from "./pages/AddPacientePage";
 
 function App() {
   const isAuthenticated = localStorage.getItem('isAuthenticated');
@@ -20,6 +21,16 @@ function App() {
           element={
             <ProtectedRoute>
               <DashboardPage />
+            </ProtectedRoute>
+          }
+        />
+
+        {/* Ruta protegida para agregar pacientes */}
+        <Route
+          path="/add-paciente"
+          element={
+            <ProtectedRoute>
+              <AddPacientePage />
             </ProtectedRoute>
           }
         />

@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
-import { FaExclamationTriangle } from 'react-icons/fa'; // Para el ícono de alerta
-import { FaChevronDown } from 'react-icons/fa'; // Para la flecha hacia abajo
+import { FaExclamationTriangle, FaChevronDown } from 'react-icons/fa'; // Importamos los iconos
 import { useNavigate } from 'react-router-dom'; // Para la redirección
 
 const Sidebar = () => {
@@ -21,14 +20,36 @@ const Sidebar = () => {
           <h1 className="text-xl font-bold">Red 911</h1>
         </div>
         <ul className="mt-5">
-          <li className="py-2 px-5 hover:bg-teal-600 cursor-pointer">Tablero De Instrumentos</li>
-          <li className="py-2 px-5 hover:bg-teal-600 cursor-pointer">Tickets</li>
-          <li className="py-2 px-5 hover:bg-teal-600 cursor-pointer">Lista</li>
+          {/* Redirección al Tablero de Instrumentos */}
+          <li
+            className="py-2 px-5 hover:bg-teal-600 cursor-pointer"
+            onClick={() => navigate('/dashboard')} // Redirigir al dashboard
+          >
+            Tablero De Instrumentos
+          </li>
+          
+          {/* Redirección a otras páginas */}
+          <li
+            className="py-2 px-5 hover:bg-teal-600 cursor-pointer"
+            onClick={() => navigate('/add-paciente')} // Supuesta página de tickets
+          >
+            Agregar Paciente
+          </li>
+          
+          <li
+            className="py-2 px-5 hover:bg-teal-600 cursor-pointer"
+            onClick={() => navigate('/lista')} // Supuesta página de lista
+          >
+            Lista
+          </li>
+          
           <li className="py-2 px-5 hover:bg-teal-600 cursor-pointer flex justify-between">
             Tablero <span className="bg-orange-500 text-xs px-2 py-1 rounded">Beta</span>
           </li>
+          
           <li className="py-2 px-5 hover:bg-teal-600 cursor-pointer">Tareas</li>
-          {/* Operaciones De TI */}
+          
+          {/* Operaciones De TI con submenú */}
           <li
             className="py-2 px-5 hover:bg-teal-600 cursor-pointer flex items-center justify-between"
             onClick={() => setOpen(!open)}
@@ -39,23 +60,50 @@ const Sidebar = () => {
             </div>
             <FaChevronDown className={`${open ? 'rotate-180' : ''} transition-transform duration-300`} /> {/* Flecha */}
           </li>
-          {/* Submenú de Operaciones De TI */}
+
           {open && (
             <ul className="ml-4">
-              <li className="py-2 px-5 hover:bg-teal-600 cursor-pointer">Submenú 1</li>
-              <li className="py-2 px-5 hover:bg-teal-600 cursor-pointer">Submenú 2</li>
+              <li
+                className="py-2 px-5 hover:bg-teal-600 cursor-pointer"
+                onClick={() => navigate('/submenu1')} // Supuesta página de submenú 1
+              >
+                Submenú 1
+              </li>
+              <li
+                className="py-2 px-5 hover:bg-teal-600 cursor-pointer"
+                onClick={() => navigate('/submenu2')} // Supuesta página de submenú 2
+              >
+                Submenú 2
+              </li>
             </ul>
           )}
-          <li className="py-2 px-5 hover:bg-teal-600 cursor-pointer">Activos</li>
-          <li className="py-2 px-5 hover:bg-teal-600 cursor-pointer">Informes</li>
-          <li className="py-2 px-5 hover:bg-teal-600 cursor-pointer">Administrador</li>
+          
+          <li
+            className="py-2 px-5 hover:bg-teal-600 cursor-pointer"
+            onClick={() => navigate('/activos')} // Supuesta página de activos
+          >
+            Activos
+          </li>
+          
+          <li
+            className="py-2 px-5 hover:bg-teal-600 cursor-pointer"
+            onClick={() => navigate('/informes')} // Supuesta página de informes
+          >
+            Informes
+          </li>
+          
+          <li
+            className="py-2 px-5 hover:bg-teal-600 cursor-pointer"
+            onClick={() => navigate('/admin')} // Supuesta página de administrador
+          >
+            Administrador
+          </li>
         </ul>
 
         {/* Botón de cerrar sesión */}
         <div className="mt-auto p-5">
           <div className="py-2 hover:bg-teal-600 cursor-pointer">Freshchat</div>
           <div className="py-2 hover:bg-teal-600 cursor-pointer">Switcher de Freshworks</div>
-          {/* Añadir aquí el botón de Cerrar Sesión */}
           <div
             className="py-2 hover:bg-red-600 cursor-pointer text-center mt-5"
             onClick={handleLogout}
@@ -63,12 +111,6 @@ const Sidebar = () => {
             Cerrar sesión
           </div>
         </div>
-      </div>
-
-      {/* Main Content */}
-      <div className="flex-1 p-10">
-        <h2 className="text-2xl font-bold">Contenido Principal</h2>
-        {/* Aquí iría tu contenido */}
       </div>
     </div>
   );
