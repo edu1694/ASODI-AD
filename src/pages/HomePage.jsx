@@ -17,28 +17,54 @@ export function HomePage() {
     }
 
     try {
-      const response = await fetch(`${baseUrl}/asodi/v1/usuarios-asodi-ad/`, {
+      // Primero verificar si el usuario es admin
+      const adminResponse = await fetch(`${baseUrl}/asodi/v1/usuarios-asodi-admin/`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
         },
       });
 
-      if (!response.ok) {
-        throw new Error('Error en la solicitud');
+      if (!adminResponse.ok) {
+        throw new Error('Error en la solicitud de admin');
       }
 
-      const usuarios = await response.json();
+      const admins = await adminResponse.json();
+      const adminEncontrado = admins.find(
+        (admin) => admin.correo === correo && admin.password === password
+      );
+
+      if (adminEncontrado) {
+        // Si el usuario es admin, redirige a AdminPage
+        localStorage.setItem('isAuthenticated', 'true');
+        await localStorage.setItem('usuario_asodi_admin', adminEncontrado.correo);
+        setLoginError(null);
+        navigate('/admin');
+        return; // Detenemos aquí si es admin
+      }
+
+      // Si no es admin, entonces verificar si es usuario normal
+      const userResponse = await fetch(`${baseUrl}/asodi/v1/usuarios-asodi-ad/`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (!userResponse.ok) {
+        throw new Error('Error en la solicitud de usuario');
+      }
+
+      const usuarios = await userResponse.json();
       const usuarioEncontrado = usuarios.find(
         (user) => user.correo === correo && user.password === password
       );
 
       if (usuarioEncontrado) {
+        // Si es usuario normal, redirige a DashboardPage
         localStorage.setItem('isAuthenticated', 'true');
         await localStorage.setItem('usuario_asodi_ad', usuarioEncontrado.rut_ad);
         setLoginError(null);
-        
-        // Cambia a navigate en lugar de window.location.href
         navigate('/dashboard');
       } else {
         setLoginError('Usuario no encontrado o contraseña incorrecta');
