@@ -1,14 +1,15 @@
-import { BrowserRouter, Routes } from "react-router-dom";
+import { BrowserRouter, Routes, Route } from "react-router-dom"; // Agrega 'Route' a la importación
 import HomePage from './pages/HomePage';
+import './index.css'; // Importa el archivo CSS que contiene Tailwind
 
-function App (){
-    return (
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<HomePage />} />
-        </Routes>
-      </BrowserRouter>
-    )
+function App() {
+  return (
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<HomePage />} />
+      </Routes>
+    </BrowserRouter>
+  );
 }
 
-export default App
+export default App;
