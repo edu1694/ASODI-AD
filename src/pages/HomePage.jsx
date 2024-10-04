@@ -17,6 +17,9 @@ export function HomePage() {
     }
 
     try {
+      // Limpiar cualquier dato anterior del localStorage antes de iniciar una nueva sesión
+      localStorage.clear();
+
       // Primero verificar si el usuario es admin
       const adminResponse = await fetch(`${baseUrl}/asodi/v1/usuarios-asodi-admin/`, {
         method: 'GET',
@@ -37,7 +40,7 @@ export function HomePage() {
       if (adminEncontrado) {
         // Si el usuario es admin, redirige a AdminPage
         localStorage.setItem('isAuthenticated', 'true');
-        await localStorage.setItem('usuario_asodi_admin', adminEncontrado.correo);
+        localStorage.setItem('usuario_asodi_admin', adminEncontrado.correo);
         setLoginError(null);
         navigate('/admin');
         return; // Detenemos aquí si es admin
@@ -63,7 +66,7 @@ export function HomePage() {
       if (usuarioEncontrado) {
         // Si es usuario normal, redirige a DashboardPage
         localStorage.setItem('isAuthenticated', 'true');
-        await localStorage.setItem('usuario_asodi_ad', usuarioEncontrado.rut_ad);
+        localStorage.setItem('usuario_asodi_ad', usuarioEncontrado.rut_ad); // Guardar el RUT en el localStorage
         setLoginError(null);
         navigate('/dashboard');
       } else {

@@ -8,6 +8,12 @@ import AddPacientePage from "./pages/AddPacientePage";
 import AdminPage from "./pages/AdminPage";
 import AddUsuarioADPage from "./pages/AddUsuarioADPage.JSX";
 import SearchUsuarioPage from "./pages/SearchUsuarioPage";
+import AddSolicitudes from "./pages/AddSolicitudes";
+import ListaSolicitudes from "./pages/ListaSolicitudes";
+import ListaPaciente from "./pages/ListaPaciente";
+import DetallePaciente from "./pages/DetallePaciente";
+import EditarPaciente from "./pages/EditarPaciente";
+
 
 function App() {
   const isAuthenticated = localStorage.getItem('isAuthenticated');
@@ -38,6 +44,33 @@ function App() {
           }
         />
         <Route
+          path="/listapaciente"
+          element={
+            <ProtectedRoute>
+              <ListaPaciente />
+            </ProtectedRoute>
+          }
+        />
+        
+        <Route
+          path="/paciente/:id"
+          element={
+            <ProtectedRoute>
+              <DetallePaciente />
+            </ProtectedRoute>
+          }
+        />
+        
+        <Route
+          path="/editarpaciente/:id"
+          element={
+            <ProtectedRoute>
+              <EditarPaciente />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
           path="/admin"
           element={
             <ProtectedRoute>
@@ -58,6 +91,22 @@ function App() {
           element={
             <ProtectedRoute>
               <SearchUsuarioPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/addsolicitudes"
+          element={
+            <ProtectedRoute>
+              <AddSolicitudes />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/listasolicitudes"
+          element={
+            <ProtectedRoute>
+              <ListaSolicitudes />
             </ProtectedRoute>
           }
         />

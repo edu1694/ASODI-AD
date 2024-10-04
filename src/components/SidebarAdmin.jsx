@@ -91,13 +91,6 @@ const SidebarAdmin = () => {
           >
             Informes
           </li>
-          
-          <li
-            className="py-2 px-5 hover:bg-teal-600 cursor-pointer"
-            onClick={() => navigate('/admin')}
-          >
-            Administrador
-          </li>
         </ul>
 
         {/* Botón de cerrar sesión */}
