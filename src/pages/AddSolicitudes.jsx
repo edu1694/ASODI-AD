@@ -25,7 +25,7 @@ const AddSolicitudForm = () => {
       const response = await axios.get(`${baseUrl}/asodi/v1/planillas-convenio/`);
       const planillas = response.data;
 
-      const planillaExiste = planillas.some(planilla => planilla.id === parseInt(idPlanilla));
+      const planillaExiste = planillas.some(planilla => planilla.id_planilla === parseInt(idPlanilla));
 
       if (planillaExiste) {
         setErrorPlanilla(null); 
