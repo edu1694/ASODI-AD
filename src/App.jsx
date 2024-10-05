@@ -6,24 +6,19 @@ import ProtectedRoute from './components/ProtectedRoute'; // Importa el componen
 import NotFoundPage from './pages/NotFoundPage'; // Importa la página de error 404
 import AddPacientePage from "./pages/AddPacientePage";
 import AdminPage from "./pages/AdminPage";
-import AddUsuarioADPage from "./pages/AddUsuarioADPage.JSX";
+import AddUsuarioADPage from "./pages/AddUsuarioADPage"; // Corregido .jsx
 import SearchUsuarioPage from "./pages/SearchUsuarioPage";
 import AddSolicitudes from "./pages/AddSolicitudes";
 import ListaSolicitudes from "./pages/ListaSolicitudes";
 import ListaPaciente from "./pages/ListaPaciente";
 import DetallePaciente from "./pages/DetallePaciente";
 import EditarPaciente from "./pages/EditarPaciente";
-
-import AddAnuncioPage from './pages/AddAnuncioPage'; // Asegúrate de tener este componente importado
-import ViewAnuncioPage from './pages/ViewAnuncioPage'; // Asegúrate de tener este componente importado
+import AddAnuncioPage from './pages/AddAnuncioPage'; // Mantener solo una importación
+import ViewAnuncioPage from './pages/ViewAnuncioPage';
 import ListaSolicitudAdmin from './pages/ListaSolicitudAdmin';
 import ListaPacienteAdmin from "./pages/ListaPacienteAdmin";
 import DetallePacienteAdmin from "./pages/DetallePacienteAdmin";
 import EditarPacienteAdmin from "./pages/EditarPacienteAdmin";
-
-import AddAnuncioPage from './pages/AddAnuncioPage';
-import ViewAnuncioPage from './pages/ViewAnuncioPage'; // Asegúrate de que la ruta sea correcta
-
 
 
 function App() {
@@ -54,6 +49,7 @@ function App() {
             </ProtectedRoute>
           }
         />
+
         <Route
           path="/listapaciente"
           element={
@@ -89,6 +85,7 @@ function App() {
             </ProtectedRoute>
           }
         />
+
         <Route
           path="/add-userad"
           element={
@@ -97,6 +94,7 @@ function App() {
             </ProtectedRoute>
           }
         />
+
         <Route
           path="/search-userad"
           element={
@@ -105,7 +103,7 @@ function App() {
             </ProtectedRoute>
           }
         />
-        
+
         <Route
           path="/add-anuncio"
           element={
@@ -115,11 +113,7 @@ function App() {
           }
         />
 
-        
-        <Route 
-
-         <Route 
-
+        <Route
           path="/addsolicitudes"
           element={
             <ProtectedRoute>
@@ -127,28 +121,24 @@ function App() {
             </ProtectedRoute>
           }
         />
+
         <Route
           path="/view-anuncio"
           element={
             <ProtectedRoute>
               <ViewAnuncioPage />
             </ProtectedRoute>
-
           }
         />
+
         <Route
-
-            }
-          />
-          <Route
-
           path="/listasolicitudes"
           element={
             <ProtectedRoute>
               <ListaSolicitudes />
             </ProtectedRoute>
           }
-          />
+        />
 
         <Route
           path="/listasolicitudadmin"
