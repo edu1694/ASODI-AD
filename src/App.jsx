@@ -13,6 +13,12 @@ import ListaSolicitudes from "./pages/ListaSolicitudes";
 import ListaPaciente from "./pages/ListaPaciente";
 import DetallePaciente from "./pages/DetallePaciente";
 import EditarPaciente from "./pages/EditarPaciente";
+import AddAnuncioPage from './pages/AddAnuncioPage'; // Asegúrate de tener este componente importado
+import ViewAnuncioPage from './pages/ViewAnuncioPage'; // Asegúrate de tener este componente importado
+import ListaSolicitudAdmin from './pages/ListaSolicitudAdmin';
+import ListaPacienteAdmin from "./pages/ListaPacienteAdmin";
+import DetallePacienteAdmin from "./pages/DetallePacienteAdmin";
+import EditarPacienteAdmin from "./pages/EditarPacienteAdmin";
 
 function App() {
   const isAuthenticated = localStorage.getItem('isAuthenticated');
@@ -93,14 +99,17 @@ function App() {
             </ProtectedRoute>
           }
         />
+        
         <Route
           path="/add-anuncio"
           element={
             <ProtectedRoute>
               <AddAnuncioPage />
             </ProtectedRoute>
-=======   />
-         <Route 
+          }
+        />
+        
+        <Route 
           path="/addsolicitudes"
           element={
             <ProtectedRoute>
@@ -114,12 +123,49 @@ function App() {
             <ProtectedRoute>
               <ViewAnuncioPage />
             </ProtectedRoute>
-          />
-          <Route
+          }
+        />
+        <Route
           path="/listasolicitudes"
           element={
             <ProtectedRoute>
               <ListaSolicitudes />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/listasolicitudadmin"
+          element={
+            <ProtectedRoute>
+              <ListaSolicitudAdmin />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/listapacienteadmin"
+          element={
+            <ProtectedRoute>
+              <ListaPacienteAdmin />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/admin/paciente/:id"
+          element={
+            <ProtectedRoute>
+              <DetallePacienteAdmin />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/editarpacienteadmin/:id"
+          element={
+            <ProtectedRoute>
+              <EditarPacienteAdmin />
             </ProtectedRoute>
           }
         />

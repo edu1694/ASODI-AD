@@ -15,6 +15,9 @@ const EditarPaciente = () => {
   const [mostrarConfirmacion, setMostrarConfirmacion] = useState(false); // Estado para mostrar el pop-up de confirmación
   const [mostrarExito, setMostrarExito] = useState(false); // Estado para mostrar el pop-up de éxito
   const [mostrarAdvertencia, setMostrarAdvertencia] = useState(true); // Estado para mostrar el pop-up de advertencia
+  const [mostrarRechazarModal, setMostrarRechazarModal] = useState(false); // Estado para mostrar el modal de rechazo
+  const [motivoRechazo, setMotivoRechazo] = useState(''); // Estado para almacenar el motivo de rechazo
+  const [mostrarErrorRechazo, setMostrarErrorRechazo] = useState(false); // Estado para mostrar el error de motivo rechazo
   const [disabledFields, setDisabledFields] = useState({}); // Para deshabilitar los campos que ya fueron editados
 
   // Estado para almacenar todos los datos del paciente
@@ -32,6 +35,7 @@ const EditarPaciente = () => {
     reg_segundo_llamado: '',
     reg_tercer_llamado: '',
     observacion: '',
+    motivo_rechazo: '',
   });
 
   // Estado para los datos editables del formulario
@@ -91,7 +95,6 @@ const EditarPaciente = () => {
     };
 
     fetchPaciente();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]);
 
   // Manejar cambios en los inputs del formulario
@@ -145,6 +148,7 @@ const EditarPaciente = () => {
       control_mes: validateDate(editData.control_mes),
       reg_segundo_llamado: validateDate(editData.reg_segundo_llamado),
       reg_tercer_llamado: validateDate(editData.reg_tercer_llamado),
+      motivo_rechazo: motivoRechazo, // Incluimos el motivo de rechazo en caso de que esté presente
     };
 
     // Mezclamos los datos editados con los demás campos de la planilla
@@ -201,6 +205,38 @@ const EditarPaciente = () => {
     setMostrarAdvertencia(false);
   };
 
+  // Abrir el modal de rechazo
+  const handleRechazarPaciente = () => {
+    setMostrarRechazarModal(true);
+  };
+
+  // Cerrar el modal de rechazo
+  const cerrarRechazarModal = () => {
+    setMostrarRechazarModal(false);
+  };
+
+  // Confirmar el rechazo del paciente
+  const confirmarRechazo = () => {
+    if (!motivoRechazo.trim()) {
+      setMostrarErrorRechazo(true); // Mostrar error si el motivo rechazo está vacío
+    } else {
+      // Aquí puedes agregar lógica adicional si es necesario
+      setEditData({ ...editData, estado_paciente: 'R' });
+      handleSubmit(); // Guardamos los cambios con el estado de "Rechazado"
+      cerrarRechazarModal();
+    }
+  };
+
+  // Cerrar el pop-up de error de rechazo
+  const cerrarErrorRechazo = () => {
+    setMostrarErrorRechazo(false);
+  };
+
+  // Función para manejar la cancelación y redirigir al Detalle del Paciente
+  const handleCancel = () => {
+    navigate(`/paciente/${id}`);  // Redirige a la página de detalles
+  };
+
   return (
     <div className="flex">
       <Sidebar /> {/* Mantenemos el Sidebar si lo necesitas */}
@@ -246,6 +282,52 @@ const EditarPaciente = () => {
           </div>
         )}
 
+        {/* Modal para Rechazar Paciente */}
+        {mostrarRechazarModal && (
+          <div className="fixed inset-0 flex items-center justify-center z-50 bg-gray-900 bg-opacity-50">
+            <div className="bg-white p-6 rounded-lg shadow-lg text-center">
+              <h2 className="text-2xl font-semibold mb-4">Rechazar Paciente</h2>
+              <p className="mb-4">El estado del paciente será cambiado a "Rechazado". Por favor, ingresa el motivo del rechazo:</p>
+              <textarea
+                value={motivoRechazo}
+                onChange={(e) => setMotivoRechazo(e.target.value)}
+                placeholder="Motivo del rechazo"
+                className="w-full p-2 border rounded"
+              />
+              <div className="flex justify-center space-x-4 mt-4">
+                <button
+                  onClick={confirmarRechazo}
+                  className="bg-red-500 text-white px-4 py-2 rounded-md shadow-md hover:bg-red-600 transition duration-300"
+                >
+                  Confirmar Rechazo
+                </button>
+                <button
+                  onClick={cerrarRechazarModal}
+                  className="bg-gray-500 text-white px-4 py-2 rounded-md shadow-md hover:bg-gray-600 transition duration-300"
+                >
+                  Cancelar
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Pop-up de error por motivo de rechazo vacío */}
+        {mostrarErrorRechazo && (
+          <div className="fixed inset-0 flex items-center justify-center z-50 bg-gray-900 bg-opacity-50">
+            <div className="bg-red-100 p-6 rounded-lg shadow-lg text-center">
+              <h2 className="text-2xl font-semibold mb-4">Error</h2>
+              <p className="mb-4">Para rechazar al paciente debes rellenar el campo "Motivo de Rechazo".</p>
+              <button
+                onClick={cerrarErrorRechazo}
+                className="bg-red-500 text-white px-4 py-2 rounded-md shadow-md hover:bg-red-600 transition duration-300"
+              >
+                Aceptar
+              </button>
+            </div>
+          </div>
+        )}
+
         {/* Pop-up de éxito al guardar cambios */}
         {mostrarExito && (
           <div className="fixed inset-0 flex items-center justify-center z-50 bg-gray-900 bg-opacity-50">
@@ -286,13 +368,15 @@ const EditarPaciente = () => {
                   <span className={`ml-2 inline-block px-3 py-1 rounded-full text-sm text-white ${
                     editData.estado_paciente === 'A' ? 'bg-green-600' :
                     editData.estado_paciente === 'E' ? 'bg-gray-500' :
-                    editData.estado_paciente === 'P' ? 'bg-yellow-500' : 
-                    editData.estado_paciente === 'O' ? 'bg-blue-600' : 'bg-gray-400'
+                    editData.estado_paciente === 'P' ? 'bg-yellow-500' :  
+                    editData.estado_paciente === 'O' ? 'bg-blue-600' :
+                    editData.estado_paciente === 'R' ? 'bg-red-500' : 'bg-gray-400'
                   }`}>
                     {editData.estado_paciente === 'A' ? 'Alta' : 
                     editData.estado_paciente === 'E' ? 'En Proceso' :
                     editData.estado_paciente === 'P' ? 'Pendiente' :  
-                    editData.estado_paciente === 'O' ? 'Operado' : 'Desconocido'}
+                    editData.estado_paciente === 'O' ? 'Operado' : 
+                    editData.estado_paciente === 'R' ? 'Rechazado' : 'Desconocido'}
                   </span>
                 </p>
 
@@ -433,8 +517,16 @@ const EditarPaciente = () => {
                 />
               </div>
 
-              {/* Botón de guardar */}
-              <div className="flex justify-center mt-8">
+              {/* Botones Cancelar, Guardar Cambios, Rechazar Paciente */}
+              <div className="flex justify-center space-x-4 mt-8">
+                <button
+                  type="button"
+                  onClick={handleCancel}
+                  className="bg-red-500 text-white px-4 py-2 rounded-md shadow-md hover:bg-red-600 transition duration-300"
+                >
+                  Cancelar
+                </button>
+
                 <button
                   type="submit"
                   disabled={botonDeshabilitado}
@@ -443,6 +535,14 @@ const EditarPaciente = () => {
                   } text-white px-4 py-2 rounded-md shadow-md transition duration-300`}
                 >
                   Guardar Cambios
+                </button>
+
+                <button
+                  type="button"
+                  onClick={handleRechazarPaciente}
+                  className="bg-red-500 text-white px-4 py-2 rounded-md shadow-md hover:bg-red-600 transition duration-300"
+                >
+                  Rechazar Paciente
                 </button>
               </div>
             </div>
