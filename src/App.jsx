@@ -13,6 +13,9 @@ import ListaSolicitudes from "./pages/ListaSolicitudes";
 import ListaPaciente from "./pages/ListaPaciente";
 import DetallePaciente from "./pages/DetallePaciente";
 import EditarPaciente from "./pages/EditarPaciente";
+import AddAnuncioPage from './pages/AddAnuncioPage';
+import ViewAnuncioPage from './pages/ViewAnuncioPage'; // Asegúrate de que la ruta sea correcta
+
 
 function App() {
   const isAuthenticated = localStorage.getItem('isAuthenticated');
@@ -99,7 +102,8 @@ function App() {
             <ProtectedRoute>
               <AddAnuncioPage />
             </ProtectedRoute>
-=======   />
+          }
+        />
          <Route 
           path="/addsolicitudes"
           element={
@@ -114,6 +118,7 @@ function App() {
             <ProtectedRoute>
               <ViewAnuncioPage />
             </ProtectedRoute>
+            }
           />
           <Route
           path="/listasolicitudes"
@@ -122,7 +127,7 @@ function App() {
               <ListaSolicitudes />
             </ProtectedRoute>
           }
-        />
+          />
 
         {/* Página de error 404 */}
         <Route path="*" element={<NotFoundPage />} />
