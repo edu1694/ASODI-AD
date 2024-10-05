@@ -1,6 +1,33 @@
-import React from 'react';
+import React, { useState } from 'react';
 
-const PanelFiltros = ({ estadoFiltro, handleEstadoChange, fechaFiltro, handleFechaChange, planillaFiltro, handlePlanillaChange }) => {
+const PanelFiltros = ({ estadoFiltro, handleEstadoChange, fechaFiltro, handleFechaChange, solicitudFiltro, handleSolicitudChange }) => {
+  const [errorSolicitud, setErrorSolicitud] = useState(''); // Estado para manejar el mensaje de error
+
+  const handleSolicitudInputChange = (e) => {
+    const value = e.target.value;
+
+    // Verificar si el valor contiene caracteres no numéricos
+    if (/^\d*$/.test(value)) {  // Solo permitir dígitos numéricos
+      setErrorSolicitud('');     // Limpiar mensaje de error si el valor es válido
+      handleSolicitudChange(value);  // Actualizar el filtro de solicitud con el valor numérico
+    } else {
+      setErrorSolicitud('Solo se aceptan caracteres numéricos.'); // Mostrar error si hay caracteres no numéricos
+    }
+  };
+
+  const handleKeyDown = (e) => {
+    // Permitir solo teclas numéricas, backspace, tab, y flechas de navegación
+    if (
+      !(e.key >= '0' && e.key <= '9') &&
+      e.key !== 'Backspace' &&
+      e.key !== 'Tab' &&
+      e.key !== 'ArrowLeft' &&
+      e.key !== 'ArrowRight'
+    ) {
+      e.preventDefault();  // Evitar la inserción de caracteres no numéricos
+    }
+  };
+
   return (
     <div className="w-80 p-6 bg-white shadow-md rounded-lg ml-4">
       <h2 className="text-2xl font-bold text-green-600 mb-4">Filtros</h2>
@@ -31,16 +58,20 @@ const PanelFiltros = ({ estadoFiltro, handleEstadoChange, fechaFiltro, handleFec
         />
       </div>
 
-      {/* Filtro por ID de Planilla */}
+      {/* Filtro por ID de Solicitud */}
       <div className="mb-4">
-        <label className="block text-gray-700 font-semibold mb-2">Filtrar por ID de Planilla</label>
+        <label className="block text-gray-700 font-semibold mb-2">Filtrar por ID de Solicitud</label>
         <input
           type="text"
-          value={planillaFiltro}
-          onChange={handlePlanillaChange}
-          placeholder="Ingrese ID de Planilla"
+          value={solicitudFiltro}
+          onKeyDown={handleKeyDown} // Bloquear caracteres no numéricos
+          onChange={handleSolicitudInputChange} // Usar la función de validación
+          placeholder="Ingrese ID de Solicitud"
           className="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
         />
+        {errorSolicitud && (
+          <p className="text-red-500 mt-2">{errorSolicitud}</p> // Mostrar mensaje de error si hay un problema
+        )}
       </div>
     </div>
   );
