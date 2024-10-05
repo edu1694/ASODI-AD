@@ -71,15 +71,19 @@ function SearchUsuarioPage() {
     // Guardar los cambios del usuario editado
     const handleSaveChanges = async () => {
         try {
-            console.log('Datos enviados:', updatedUsuario); // Inspecciona los datos enviados en consola
+            // Asegúrate de que el RUT esté formateado correctamente antes de enviarlo
+            const formattedRUT = formatRUT(updatedUsuario.rut_ad);
+            const usuarioActualizado = { ...updatedUsuario, rut_ad: formattedRUT };
             
-            await axios.put(`${baseUrl}/asodi/v1/usuarios-asodi-ad/${updatedUsuario.rut_ad}/`, updatedUsuario, {
+            console.log('Datos enviados:', usuarioActualizado); // Inspecciona los datos enviados en consola
+            
+            await axios.put(`${baseUrl}/asodi/v1/usuarios-asodi-ad/${formattedRUT}/`, usuarioActualizado, {
                 headers: {
                     'Content-Type': 'application/json',
                 },
             });
-            console.log('Datos recibidos:', updatedUsuario);
-            setUsuario(updatedUsuario); // Actualiza la información en la página principal
+            console.log('Datos recibidos:', usuarioActualizado);
+            setUsuario(usuarioActualizado); // Actualiza la información en la página principal
             setShowModal(false); // Cierra el modal
         } catch (error) {
             console.error("Error actualizando usuario:", error);
@@ -148,15 +152,15 @@ function SearchUsuarioPage() {
                 {/* Modal para editar los datos del usuario */}
                 {showModal && (
                     <Modal onClose={handleCloseModal}>
-                        <h2 className="text-2xl font-bold mb-4">Editar Usuario</h2>
                         <div className="grid grid-cols-1 gap-4">
+                            {/* Campo editable para modificar el RUT */}
                             <div>
                                 <label>RUT:</label>
                                 <input
                                     className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700"
                                     name="rut_ad"
-                                    value={updatedUsuario.rut_ad}
-                                    disabled
+                                    value={formatRUT(updatedUsuario.rut_ad)}  // Aplicamos la función de formato en tiempo real
+                                    onChange={(e) => setUpdatedUsuario({ ...updatedUsuario, rut_ad: formatRUT(e.target.value) })}
                                 />
                             </div>
                             <div>

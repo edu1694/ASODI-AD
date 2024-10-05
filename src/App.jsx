@@ -8,6 +8,8 @@ import AddPacientePage from "./pages/AddPacientePage";
 import AdminPage from "./pages/AdminPage";
 import AddUsuarioADPage from "./pages/AddUsuarioADPage.JSX";
 import SearchUsuarioPage from "./pages/SearchUsuarioPage";
+import AddAnuncioPage from "./pages/AddAnuncioPage";
+import ViewAnuncioPage from "./pages/ViewAnuncioPage";
 
 function App() {
   const isAuthenticated = localStorage.getItem('isAuthenticated');
@@ -58,6 +60,22 @@ function App() {
           element={
             <ProtectedRoute>
               <SearchUsuarioPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/add-anuncio"
+          element={
+            <ProtectedRoute>
+              <AddAnuncioPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/view-anuncio"
+          element={
+            <ProtectedRoute>
+              <ViewAnuncioPage />
             </ProtectedRoute>
           }
         />
