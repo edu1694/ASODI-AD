@@ -13,12 +13,18 @@ import ListaSolicitudes from "./pages/ListaSolicitudes";
 import ListaPaciente from "./pages/ListaPaciente";
 import DetallePaciente from "./pages/DetallePaciente";
 import EditarPaciente from "./pages/EditarPaciente";
+
 import AddAnuncioPage from './pages/AddAnuncioPage'; // Asegúrate de tener este componente importado
 import ViewAnuncioPage from './pages/ViewAnuncioPage'; // Asegúrate de tener este componente importado
 import ListaSolicitudAdmin from './pages/ListaSolicitudAdmin';
 import ListaPacienteAdmin from "./pages/ListaPacienteAdmin";
 import DetallePacienteAdmin from "./pages/DetallePacienteAdmin";
 import EditarPacienteAdmin from "./pages/EditarPacienteAdmin";
+
+import AddAnuncioPage from './pages/AddAnuncioPage';
+import ViewAnuncioPage from './pages/ViewAnuncioPage'; // Asegúrate de que la ruta sea correcta
+
+
 
 function App() {
   const isAuthenticated = localStorage.getItem('isAuthenticated');
@@ -108,8 +114,12 @@ function App() {
             </ProtectedRoute>
           }
         />
+
         
         <Route 
+
+         <Route 
+
           path="/addsolicitudes"
           element={
             <ProtectedRoute>
@@ -123,16 +133,22 @@ function App() {
             <ProtectedRoute>
               <ViewAnuncioPage />
             </ProtectedRoute>
+
           }
         />
         <Route
+
+            }
+          />
+          <Route
+
           path="/listasolicitudes"
           element={
             <ProtectedRoute>
               <ListaSolicitudes />
             </ProtectedRoute>
           }
-        />
+          />
 
         <Route
           path="/listasolicitudadmin"
