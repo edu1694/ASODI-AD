@@ -14,7 +14,6 @@ import ListaPaciente from "./pages/ListaPaciente";
 import DetallePaciente from "./pages/DetallePaciente";
 import EditarPaciente from "./pages/EditarPaciente";
 
-
 function App() {
   const isAuthenticated = localStorage.getItem('isAuthenticated');
 
@@ -95,6 +94,13 @@ function App() {
           }
         />
         <Route
+          path="/add-anuncio"
+          element={
+            <ProtectedRoute>
+              <AddAnuncioPage />
+            </ProtectedRoute>
+=======   />
+         <Route 
           path="/addsolicitudes"
           element={
             <ProtectedRoute>
@@ -103,6 +109,13 @@ function App() {
           }
         />
         <Route
+          path="/view-anuncio"
+          element={
+            <ProtectedRoute>
+              <ViewAnuncioPage />
+            </ProtectedRoute>
+          />
+          <Route
           path="/listasolicitudes"
           element={
             <ProtectedRoute>

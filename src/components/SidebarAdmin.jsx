@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { FaExclamationTriangle, FaChevronDown } from 'react-icons/fa';
+import { FaExclamationTriangle, FaChevronDown  } from 'react-icons/fa';
+import { AiFillBell, AiFillPlusSquare, AiFillContainer, AiFillIdcard, AiFillSecurityScan   } from "react-icons/ai";
 import { useNavigate } from 'react-router-dom';
 
 const SidebarAdmin = () => {
@@ -27,36 +28,14 @@ const SidebarAdmin = () => {
           >
             Dashboard
           </li>
-          
-          {/* Redirección a otras páginas */}
-          <li
-            className="py-2 px-5 hover:bg-teal-600 cursor-pointer"
-            onClick={() => navigate('/add-userad')}
-          >
-            Agregar Usuarios ASODI
-          </li>
-          
-          <li
-            className="py-2 px-5 hover:bg-teal-600 cursor-pointer"
-            onClick={() => navigate('/search-userad')}
-          >
-            Buscar Usuarios ASODI
-          </li>
-          
-          <li className="py-2 px-5 hover:bg-teal-600 cursor-pointer flex justify-between">
-            Tablero <span className="bg-orange-500 text-xs px-2 py-1 rounded">Beta</span>
-          </li>
-          
-          <li className="py-2 px-5 hover:bg-teal-600 cursor-pointer">Tareas</li>
-          
           {/* Operaciones De TI con submenú */}
           <li
             className="py-2 px-5 hover:bg-teal-600 cursor-pointer flex items-center justify-between"
             onClick={() => setOpen(!open)}
           >
             <div className="flex items-center">
-              <FaExclamationTriangle className="mr-2" />
-              Operaciones De TI
+              <AiFillIdcard  className="mr-2" />
+              Usuarios ASODI
             </div>
             <FaChevronDown className={`${open ? 'rotate-180' : ''} transition-transform duration-300`} />
           </li>
@@ -65,18 +44,65 @@ const SidebarAdmin = () => {
             <ul className="ml-4">
               <li
                 className="py-2 px-5 hover:bg-teal-600 cursor-pointer"
-                onClick={() => navigate('/submenu1')}
+                onClick={() => navigate('/add-userad')}
               >
-                Submenú 1
+                <div className="flex items-center">
+                  <AiFillPlusSquare className="mr-1" />
+                  Crear Usuarios ASODI
+                </div>
               </li>
               <li
                 className="py-2 px-5 hover:bg-teal-600 cursor-pointer"
-                onClick={() => navigate('/submenu2')}
+                onClick={() => navigate('/search-userad')}
               >
-                Submenú 2
+                <div className="flex items-center">
+                  <AiFillSecurityScan className="mr-1" />
+                  Buscar Usuarios ASODI
+                </div>
               </li>
             </ul>
           )}
+          <li
+            className="py-2 px-5 hover:bg-teal-600 cursor-pointer flex items-center justify-between"
+            onClick={() => setOpen(!open)}
+          >
+            <div className="flex items-center">
+              <AiFillBell className="mr-2" />
+              Anuncios
+            </div>
+            <FaChevronDown className={`${open ? 'rotate-180' : ''} transition-transform duration-300`} />
+          </li>
+
+          {open && (
+            <ul className="ml-4">
+              <li
+                className="py-2 px-5 hover:bg-teal-600 cursor-pointer"
+                onClick={() => navigate('/add-anuncio')}
+              >
+                <div className="flex items-center">
+                  <AiFillPlusSquare className="mr-1" />
+                  Crear Anuncio
+                </div>
+              </li>
+              <li
+                className="py-2 px-5 hover:bg-teal-600 cursor-pointer"
+                onClick={() => navigate('/view-anuncio')}
+              >
+                <div className="flex items-center">
+                  <AiFillContainer className="mr-1" />
+                  Listar Anuncio
+                </div>
+              </li>
+            </ul>
+          )}
+          <li className="py-2 px-5 hover:bg-teal-600 cursor-pointer flex justify-between">
+            Tablero <span className="bg-orange-500 text-xs px-2 py-1 rounded">Beta</span>
+          </li>
+          
+          <li className="py-2 px-5 hover:bg-teal-600 cursor-pointer">Tareas</li>
+          
+          {/* Operaciones De TI con submenú */}
+          
           
           <li
             className="py-2 px-5 hover:bg-teal-600 cursor-pointer"
