@@ -10,7 +10,7 @@ const ListaSolicitudes = () => {
   const [cargando, setCargando] = useState(true); 
   const [estadoFiltro, setEstadoFiltro] = useState(''); // Estado del filtro de estado
   const [fechaFiltro, setFechaFiltro] = useState(''); // Estado del filtro de fecha
-  const [planillaFiltro, setPlanillaFiltro] = useState(''); // Estado del filtro por ID de Planilla
+  const [solicitudFiltro, setSolicitudFiltro] = useState(''); // Estado del filtro por ID de solicitud
 
   useEffect(() => {
     const usuarioSolicitante = localStorage.getItem('usuario_asodi_ad'); // Obtener el RUT del usuario logueado
@@ -57,15 +57,15 @@ const ListaSolicitudes = () => {
               solicitudesFiltradas = solicitudesFecha;
             }
 
-            // Aplicar el filtro por ID de Planilla
-            if (planillaFiltro) {
-              const solicitudesPlanilla = solicitudesFiltradas.filter(
-                (solicitud) => solicitud.planilla_convenio.toString() === planillaFiltro
+            // Aplicar el filtro por ID de Solicitud
+            if (solicitudFiltro) {
+              const solicitudesSolicitud = solicitudesFiltradas.filter(
+                (solicitud) => solicitud.id_soli.toString() === solicitudFiltro
               );
-              if (solicitudesPlanilla.length === 0) {
-                filtroFallido = 'planilla';
+              if (solicitudesSolicitud.length === 0) {
+                filtroFallido = 'solicitud';
               }
-              solicitudesFiltradas = solicitudesPlanilla;
+              solicitudesFiltradas = solicitudesSolicitud;
             }
 
             if (solicitudesFiltradas.length > 0) {
@@ -82,8 +82,8 @@ const ListaSolicitudes = () => {
                 case 'fecha':
                   setMensaje('No hay solicitudes que coincidan con la fecha seleccionada.');
                   break;
-                case 'planilla':
-                  setMensaje('No hay solicitudes que coincidan con el ID de Planilla ingresado.');
+                case 'solicitud':
+                  setMensaje('No hay solicitudes que coincidan con el ID ingresado.');
                   break;
                 default:
                   setMensaje('No tienes solicitudes que coincidan con los filtros.');
@@ -107,7 +107,7 @@ const ListaSolicitudes = () => {
       setMensaje('Usuario solicitante no encontrado en localStorage.');
       setCargando(false);
     }
-  }, [estadoFiltro, fechaFiltro, planillaFiltro]); // Ejecutar cada vez que los filtros cambien
+  }, [estadoFiltro, fechaFiltro, solicitudFiltro]); // Ejecutar cada vez que los filtros cambien
 
   const handleEstadoChange = (e) => {
     setEstadoFiltro(e.target.value); // Actualizar el filtro de estado
@@ -117,8 +117,13 @@ const ListaSolicitudes = () => {
     setFechaFiltro(e.target.value); // Actualizar el filtro de fecha
   };
 
-  const handlePlanillaChange = (e) => {
-    setPlanillaFiltro(e.target.value); // Actualizar el filtro de planilla
+  const handleSolicitudChange = (value) => {
+    setSolicitudFiltro(value); // Actualizar el filtro por ID de solicitud
+  };
+
+  const verificarSolicitud = (value, callback) => {
+    const existe = solicitudes.some((solicitud) => solicitud.id_soli.toString() === value);
+    callback(existe);
   };
 
   return (
@@ -183,8 +188,9 @@ const ListaSolicitudes = () => {
         handleEstadoChange={handleEstadoChange}
         fechaFiltro={fechaFiltro}
         handleFechaChange={handleFechaChange}
-        planillaFiltro={planillaFiltro}
-        handlePlanillaChange={handlePlanillaChange}
+        solicitudFiltro={solicitudFiltro}
+        handleSolicitudChange={handleSolicitudChange}
+        verificarSolicitud={verificarSolicitud}
       />
     </div>
   );

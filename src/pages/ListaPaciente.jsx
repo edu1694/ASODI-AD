@@ -14,7 +14,6 @@ const ListaPacientes = () => {
   const [estadoFiltro, setEstadoFiltro] = useState('Todos');
   const navigate = useNavigate();
 
-  // Función para obtener los pacientes desde la API
   const fetchPacientes = async () => {
     try {
       setCargando(true);
@@ -36,16 +35,18 @@ const ListaPacientes = () => {
     fetchPacientes();
   }, []);
 
-  // Función para redirigir al detalle de un paciente
   const handleRowClick = (id_planilla) => {
     navigate(`/paciente/${id_planilla}`);
   };
 
-  // Filtrar los pacientes con base en los filtros
+  const formatFecha = (fecha) => {
+    return fecha ? fecha.split('T')[0] : '';
+  };
+
   const pacientesFiltrados = pacientes.filter((paciente) => {
     const idMatch = idFiltro === '' || paciente.id_planilla.toString().includes(idFiltro);
     const rutMatch = rutFiltro === '' || paciente.rut.includes(rutFiltro);
-    const fechaMatch = fechaFiltro === '' || paciente.fecha_recepcion === fechaFiltro;
+    const fechaMatch = fechaFiltro === '' || formatFecha(paciente.fecha_recepcion) === fechaFiltro;
     const estadoMatch = estadoFiltro === 'Todos' || paciente.estado_paciente === estadoFiltro;
     return idMatch && rutMatch && fechaMatch && estadoMatch;
   });
@@ -54,7 +55,6 @@ const ListaPacientes = () => {
     <div className="flex">
       <Sidebar /> {/* Sidebar */}
 
-      {/* Panel izquierdo con la lista de pacientes */}
       <div className="flex-grow max-w-5xl mx-auto mt-10 p-6 bg-gray-100 shadow-md rounded-lg">
         <h1 className="text-3xl font-bold mb-6 text-green-600">Lista de Pacientes</h1>
 
@@ -86,7 +86,7 @@ const ListaPacientes = () => {
                   <td className="py-3 px-6">{paciente.rut}</td>
                   <td className="py-3 px-6">{paciente.nombre_paciente}</td>
                   <td className="py-3 px-6">{paciente.apellido_paciente}</td>
-                  <td className="py-3 px-6">{paciente.fecha_recepcion}</td>
+                  <td className="py-3 px-6">{formatFecha(paciente.fecha_recepcion)}</td> {/* Mostrar fecha formateada */}
                   <td className="py-3 px-6">{paciente.convenios}</td>
                   <td className="py-3 px-6">
                     <span
@@ -129,9 +129,7 @@ const ListaPacientes = () => {
         estadoFiltro={estadoFiltro}
         handleEstadoChange={(e) => setEstadoFiltro(e.target.value)}
         fechaFiltro={fechaFiltro}
-        handleFechaChange={(e) => setFechaFiltro(e.target.value)}
-        idFiltro={idFiltro}
-        handleIdChange={setIdFiltro}
+        handleFechaChange={setFechaFiltro} // Actualizamos para que acepte el valor directamente
         rutFiltro={rutFiltro}
         handleRutChange={setRutFiltro}
       />
