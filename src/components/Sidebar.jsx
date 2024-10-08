@@ -52,8 +52,11 @@ const Sidebar = () => {
           <li className="py-2 px-5 hover:bg-teal-600 cursor-pointer" onClick={() => navigate('/listapaciente')}>
             Lista Pacientes
           </li>
-          <li className="py-2 px-5 hover:bg-teal-600 cursor-pointer flex justify-between">
-            Tablero <span className="bg-orange-500 text-xs px-2 py-1 rounded">Beta</span>
+          <li className="py-2 px-5 hover:bg-teal-600 cursor-pointer flex justify-between" onClick={() => navigate('/listapendientes')}>
+            Lista Pendientes para ser llamados
+          </li>
+          <li className="py-2 px-5 hover:bg-teal-600 cursor-pointer flex justify-between" onClick={() => navigate('/listaproceso')}>
+            Lista Pendientes para ser operados 
           </li>
 
           {/* Submenú Operaciones TI */}

@@ -19,7 +19,8 @@ import ListaSolicitudAdmin from './pages/ListaSolicitudAdmin';
 import ListaPacienteAdmin from "./pages/ListaPacienteAdmin";
 import DetallePacienteAdmin from "./pages/DetallePacienteAdmin";
 import EditarPacienteAdmin from "./pages/EditarPacienteAdmin";
-
+import ListaEnProceso from "./pages/ListaEnProceso";
+import ListaPendientes from "./pages/ListaPendientes";
 
 function App() {
   const isAuthenticated = localStorage.getItem('isAuthenticated');
@@ -172,6 +173,23 @@ function App() {
           element={
             <ProtectedRoute>
               <EditarPacienteAdmin />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/listaproceso"
+          element={
+            <ProtectedRoute>
+              <ListaEnProceso />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/listapendientes"
+          element={
+            <ProtectedRoute>
+              <ListaPendientes />
             </ProtectedRoute>
           }
         />
