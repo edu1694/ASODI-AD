@@ -5,7 +5,6 @@ import Sidebar from '../components/Sidebar';
 
 function AddPacientePage() {
     const [pacienteData, setPacienteData] = useState({
-        fecha_recepcion: '',
         rut: '',
         nombre_paciente: '',
         apellido_paciente: '',
@@ -96,7 +95,6 @@ function AddPacientePage() {
 
         const requiredFields = [
             'convenios',
-            'fecha_recepcion',
             'rut',
             'nombre_paciente',
             'apellido_paciente',
@@ -124,7 +122,6 @@ function AddPacientePage() {
             const formattedData = {
                 ...pacienteData,
                 fecha_sic: formatDate(pacienteData.fecha_sic),
-                fecha_recepcion: formatDate(pacienteData.fecha_recepcion),
                 reg_primer_llamado: formatDate(pacienteData.reg_primer_llamado),
                 reg_segundo_llamado: formatDate(pacienteData.reg_segundo_llamado),
                 reg_tercer_llamado: formatDate(pacienteData.reg_tercer_llamado),
@@ -148,7 +145,6 @@ function AddPacientePage() {
                 setMessage('Paciente agregado exitosamente');
                 setMessageType('success');
                 setPacienteData({
-                    fecha_recepcion: '',
                     rut: '',
                     nombre_paciente: '',
                     apellido_paciente: '',
@@ -218,22 +214,6 @@ function AddPacientePage() {
                                 </option>
                             ))}
                         </select>
-                    </div>
-
-                    {/* Fecha de Recepción */}
-                    <div className="mb-4">
-                        <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="fecha_recepcion">
-                            Fecha de recepción:<span className="text-red-500">*</span>
-                        </label>
-                        <input
-                            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700"
-                            id="fecha_recepcion"
-                            name="fecha_recepcion"
-                            type="date"
-                            value={pacienteData.fecha_recepcion}
-                            onChange={handleChange}
-                            required
-                        />
                     </div>
 
                     {/* RUT */}
