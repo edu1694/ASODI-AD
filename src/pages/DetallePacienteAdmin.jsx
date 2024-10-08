@@ -45,7 +45,7 @@ const DetallePacienteAdmin = () => {
     <div className="flex">
       <Sidebar />
 
-      <div className="flex-grow max-w-5xl mx-auto mt-10 p-8 bg-white shadow-lg rounded-lg">
+      <div className="flex-grow max-w-4xl mx-auto mt-10 p-8 bg-white shadow-lg rounded-lg">
         {mensaje ? (
           <div className="p-4 mb-6 text-white bg-red-500 rounded-md">
             {mensaje}

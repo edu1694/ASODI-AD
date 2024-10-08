@@ -4,6 +4,15 @@ import { useNavigate } from 'react-router-dom';
 import SidebarAdmin from '../components/SidebarAdmin.jsx'; // Usar SidebarAdmin
 import { baseUrl } from '../api/asodi.api.js';
 
+// Función para formatear las fechas en formato YYYY-MM-DD
+const formatDateToYYYYMMDD = (date) => {
+  const d = new Date(date);
+  if (!isNaN(d)) {
+    return d.toISOString().split('T')[0]; // Genera el formato YYYY-MM-DD
+  }
+  return null; // Retorna null si la fecha no es válida
+};
+
 const ListaPacienteAdmin = () => {
   const [pacientes, setPacientes] = useState([]);
   const [mensaje, setMensaje] = useState(null);
@@ -17,7 +26,15 @@ const ListaPacienteAdmin = () => {
       const response = await axios.get(`${baseUrl}/asodi/v1/planillas-convenio/`);
 
       if (response.status === 200 && response.data.length > 0) {
-        setPacientes(response.data);
+        // Formatear las fechas antes de asignarlas al estado
+        const pacientesFormateados = response.data.map(paciente => ({
+          ...paciente,
+          fecha_recepcion: formatDateToYYYYMMDD(paciente.fecha_recepcion), // Formatear la fecha de recepción
+          reg_primer_llamado: formatDateToYYYYMMDD(paciente.reg_primer_llamado), // Formatear el primer llamado
+          reg_segundo_llamado: formatDateToYYYYMMDD(paciente.reg_segundo_llamado), // Formatear el segundo llamado
+          reg_tercer_llamado: formatDateToYYYYMMDD(paciente.reg_tercer_llamado), // Formatear el tercer llamado
+        }));
+        setPacientes(pacientesFormateados);
       } else {
         setMensaje('No hay pacientes registrados.');
       }
@@ -82,7 +99,7 @@ const ListaPacienteAdmin = () => {
                   <td className="py-3 px-6">{paciente.rut}</td> {/* Mostrar RUT */}
                   <td className="py-3 px-6">{paciente.nombre_paciente}</td> {/* Mostrar Nombre */}
                   <td className="py-3 px-6">{paciente.apellido_paciente}</td> {/* Mostrar Apellido */}
-                  <td className="py-3 px-6">{paciente.fecha_recepcion}</td> {/* Mostrar Fecha */}
+                  <td className="py-3 px-6">{paciente.fecha_recepcion}</td> {/* Mostrar Fecha Recepción */}
                   <td className="py-3 px-6">{paciente.convenios}</td> {/* Mostrar Convenio */}
                   <td className="py-3 px-6">
                     <span

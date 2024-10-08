@@ -1,51 +1,49 @@
 import React, { useState } from 'react';
 
-const FiltroPaciente = ({ estadoFiltro, handleEstadoChange, fechaFiltro, handleFechaChange, idFiltro, handleIdChange, rutFiltro, handleRutChange }) => {
-  const [errorId, setErrorId] = useState(''); // Estado para manejar el mensaje de error para ID
-  const [errorRut, setErrorRut] = useState(''); // Estado para manejar el mensaje de error para RUT
+// Función para formatear el RUT con puntos y guión, asegurando que la 'K' solo esté al final
+const formatRut = (rut) => {
+  // Remover todo excepto números y 'k' o 'K'
+  let rutLimpio = rut.replace(/[^0-9kK]/g, '');
 
-  // Validación para permitir solo números en el campo ID
-  const handleIdInputChange = (e) => {
-    const value = e.target.value;
-    if (/^\d*$/.test(value)) {
-      setErrorId('');  // Limpiar el mensaje de error si es válido
-      handleIdChange(value);  // Actualizar el ID si es válido
-    } else {
-      setErrorId('Solo se aceptan caracteres numéricos.');  // Mostrar error si no es numérico
-    }
-  };
+  // Si ya hay una "k" (o "K") en cualquier parte del RUT antes del guion, la eliminamos
+  const indexOfK = rutLimpio.indexOf('k') !== -1 ? rutLimpio.indexOf('k') : rutLimpio.indexOf('K');
+  if (indexOfK !== -1 && indexOfK !== rutLimpio.length - 1) {
+    rutLimpio = rutLimpio.slice(0, indexOfK); // Remover cualquier "k" que no esté al final
+  }
 
-  // Función para formatear RUT a "XX.XXX.XXX-X"
-  const formatRut = (rut) => {
-    const cleanRut = rut.replace(/[^\dkK]/g, '').toUpperCase();  // Remover caracteres no permitidos y convertir la 'k' a mayúscula
-    if (cleanRut.length <= 1) return cleanRut;
+  // Separar el cuerpo del dígito verificador (DV)
+  const cuerpo = rutLimpio.slice(0, -1);
+  let dv = rutLimpio.slice(-1);
 
-    const cuerpo = cleanRut.slice(0, -1);
-    const verificador = cleanRut.slice(-1);
+  // Si el último carácter no es 'k' o 'K', entonces el DV es el último dígito
+  if (!/[kK0-9]/.test(dv)) {
+    dv = ''; // Si el último carácter es inválido, lo eliminamos
+  }
 
-    const formattedCuerpo = cuerpo.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+  // Agregar puntos al cuerpo
+  let cuerpoFormateado = cuerpo.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
 
-    return `${formattedCuerpo}-${verificador}`;
-  };
+  return `${cuerpoFormateado}-${dv}`;
+};
 
-  // Validación y formateo progresivo del RUT
+// Expresión regular más estricta para validar el RUT completo
+const rutRegex = /^[0-9]{1,2}\.[0-9]{3}\.[0-9]{3}-[0-9kK]{1}$/;
+
+const FiltroPaciente = ({ estadoFiltro, handleEstadoChange, fechaFiltro, handleFechaChange, rutFiltro, handleRutChange }) => {
+  const [errorRut, setErrorRut] = useState(''); // Estado para manejar el mensaje de error
+
   const handleRutInputChange = (e) => {
-    let value = e.target.value.toUpperCase();
+    const value = e.target.value;
 
-    // Remover cualquier carácter no numérico excepto la 'K'
-    value = value.replace(/[^\dkK]/g, '');
+    // Formatear el RUT a medida que el usuario escribe
+    const rutFormateado = formatRut(value);
+    handleRutChange(rutFormateado);
 
-    // Aplicar el formato solo si el campo tiene más de 1 dígito
-    if (value.length > 1) {
-      value = formatRut(value);
-    }
-
-    // Verificar si es un RUT válido o si contiene caracteres no permitidos
-    if (/^[0-9.]+[-kK]{0,1}$/.test(value) || value === '') {
-      setErrorRut('');  // Limpiar el mensaje de error
-      handleRutChange(value);  // Actualizar el valor del RUT
+    // Validar el RUT ingresado
+    if (rutFormateado.length > 9 && rutRegex.test(rutFormateado)) { // Asegurarse de que el RUT tenga la longitud adecuada
+      setErrorRut('');  // Limpiar mensaje de error si el formato es válido
     } else {
-      setErrorRut('Formato de RUT incorrecto.');
+      setErrorRut('Formato de RUT inválido. Debe ser 11.111.111-1 o 11.111.111-K.'); // Mostrar error si el formato es incorrecto
     }
   };
 
@@ -53,35 +51,24 @@ const FiltroPaciente = ({ estadoFiltro, handleEstadoChange, fechaFiltro, handleF
     <div className="w-80 p-6 bg-white shadow-md rounded-lg ml-4">
       <h2 className="text-2xl font-bold text-green-600 mb-4">Filtros</h2>
 
-      {/* Filtro por ID */}
-      <div className="mb-4">
-        <label className="block text-gray-700 font-semibold mb-2">ID:</label>
-        <input
-          type="text"
-          value={idFiltro}
-          onChange={handleIdInputChange}
-          className="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
-          placeholder="Buscar por ID"
-        />
-        {errorId && <p className="text-red-500 text-sm mt-1">{errorId}</p>}
-      </div>
-
       {/* Filtro por RUT */}
       <div className="mb-4">
-        <label className="block text-gray-700 font-semibold mb-2">RUT:</label>
+        <label className="block text-gray-700 font-semibold mb-2">Filtrar por RUT</label>
         <input
           type="text"
           value={rutFiltro}
           onChange={handleRutInputChange}
+          placeholder="Ingrese RUT (Ej: 11.111.111-1)"
           className="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
-          placeholder="20.986.233-6"
         />
-        {errorRut && <p className="text-red-500 text-sm mt-1">{errorRut}</p>}
+        {errorRut && (
+          <p className="text-red-500 mt-2">{errorRut}</p> // Mostrar mensaje de error si el formato es incorrecto
+        )}
       </div>
 
-      {/* Filtro por fecha de recepción */}
+      {/* Filtro por fecha de ingreso */}
       <div className="mb-4">
-        <label className="block text-gray-700 font-semibold mb-2">Fecha de Recepción:</label>
+        <label className="block text-gray-700 font-semibold mb-2">Fecha de Ingreso:</label>
         <input
           type="date"
           value={fechaFiltro}

@@ -34,8 +34,8 @@ const Sidebar = () => {
 
   return (
     <div className="flex">
-      {/* Sidebar con posición fija */}
-      <div className={`fixed top-0 left-0 w-64 bg-teal-700 text-white h-screen flex flex-col md:w-72 lg:w-80 overflow-y-auto transition-all ${isScrolled ? 'shadow-lg bg-teal-800' : 'bg-teal-700'}`}>
+      {/* Sidebar con posición fija y tamaño reducido */}
+      <div className={`fixed top-0 left-0 w-52 bg-teal-700 text-white h-screen flex flex-col md:w-60 lg:w-64 overflow-y-auto transition-all ${isScrolled ? 'shadow-lg bg-teal-800' : 'bg-teal-700'}`}>
         {/* Encabezado */}
         <div className={`p-5 transition-all ${isScrolled ? 'bg-teal-800' : 'bg-teal-700'}`}>
           <h1 className="text-xl font-bold">ASODI AD</h1>
@@ -54,33 +54,6 @@ const Sidebar = () => {
           </li>
           <li className="py-2 px-5 hover:bg-teal-600 cursor-pointer flex justify-between">
             Tablero <span className="bg-orange-500 text-xs px-2 py-1 rounded">Beta</span>
-          </li>
-
-          {/* Submenú Operaciones TI */}
-          <li className="py-2 px-5 hover:bg-teal-600 cursor-pointer flex items-center justify-between" onClick={() => setOpenOperacionesTI(!openOperacionesTI)}>
-            <div className="flex items-center">
-              <FaExclamationTriangle className="mr-2" />
-              Operaciones De TI
-            </div>
-            <FaChevronDown className={`${openOperacionesTI ? 'rotate-180' : ''} transition-transform duration-300`} />
-          </li>
-          {openOperacionesTI && (
-            <ul className="ml-4">
-              <li className="py-2 px-5 hover:bg-teal-600 cursor-pointer" onClick={() => navigate('/submenu1')}>
-                Submenú 1
-              </li>
-              <li className="py-2 px-5 hover:bg-teal-600 cursor-pointer" onClick={() => navigate('/submenu2')}>
-                Submenú 2
-              </li>
-            </ul>
-          )}
-
-          {/* Activos y Informes */}
-          <li className="py-2 px-5 hover:bg-teal-600 cursor-pointer" onClick={() => navigate('/activos')}>
-            Activos
-          </li>
-          <li className="py-2 px-5 hover:bg-teal-600 cursor-pointer" onClick={() => navigate('/informes')}>
-            Informes
           </li>
 
           {/* Submenú Solicitudes */}
@@ -110,7 +83,7 @@ const Sidebar = () => {
       </div>
 
       {/* El contenido de la página se desplaza junto al Sidebar */}
-      <div className="ml-64 flex-grow p-8">
+      <div className="ml-52 flex-grow p-8">
         {/* Aquí va el contenido de la página */}
       </div>
     </div>
