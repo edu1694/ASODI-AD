@@ -16,12 +16,34 @@ function AddUsuarioADPage() {
     const [mensajeTipo, setMensajeTipo] = useState('');
     const [cargando, setCargando] = useState(false);
 
+    // Función para formatear el RUT correctamente
+    const formatRUT = (rut) => {
+        const cleanRut = rut.replace(/[^\dkK]/g, ''); // Eliminar todo lo que no sea dígitos o 'K'/'k'
+        const rutBody = cleanRut.slice(0, -1); // Cuerpo del RUT
+        const dv = cleanRut.slice(-1).toUpperCase(); // Dígito verificador
+        
+        // Añadir puntos para separar los miles
+        let formattedRutBody = rutBody.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+        
+        return `${formattedRutBody}-${dv}`;
+    };
+
+    // Manejar el cambio de los inputs y formatear el RUT si corresponde
     const handleChange = (e) => {
         const { name, value } = e.target;
-        setUsuarioData({
-            ...usuarioData,
-            [name]: value
-        });
+        
+        // Formatear el RUT si es el campo de RUT
+        if (name === 'rut_ad') {
+            setUsuarioData({
+                ...usuarioData,
+                [name]: formatRUT(value) // Formatear el RUT
+            });
+        } else {
+            setUsuarioData({
+                ...usuarioData,
+                [name]: value
+            });
+        }
     };
 
     const handleSubmit = async (e) => {
@@ -86,6 +108,7 @@ function AddUsuarioADPage() {
                                 value={usuarioData.rut_ad}
                                 onChange={handleChange}
                                 required
+                                placeholder="11.111.111-1"
                             />
                         </div>
 
