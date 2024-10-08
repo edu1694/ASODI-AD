@@ -91,15 +91,13 @@ function SearchUsuarioPage() {
     };
 
     return (
-        <div className="flex h-screen overflow-hidden">
+        <div className="flex h-screen">
             {/* SidebarAdmin fijo */}
-            <div className="w-64 bg-teal-700 text-white fixed h-screen">
-                <SidebarAdmin />
-            </div>
+            <SidebarAdmin />
 
             {/* Contenido principal */}
-            <div className="flex-grow p-10 bg-gray-100 ml-64">
-                <h1 className="text-4xl font-bold mb-4 text-center">Buscar Usuario</h1>
+            <div className="flex-grow max-w-4xl mx-auto p-6 bg-gray-100 shadow-md rounded-lg mt-10">
+                <h1 className="text-3xl font-bold mb-4 text-center text-green-600">Buscar Usuario</h1>
 
                 {/* Campo de búsqueda por RUT */}
                 <div className="mb-4">
@@ -116,7 +114,7 @@ function SearchUsuarioPage() {
                     />
                     <button
                         onClick={handleSearch}
-                        className="bg-[#28a745] hover:bg-[#28a745] text-white font-bold py-2 px-4 rounded mt-4"
+                        className="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded mt-4"
                         disabled={isLoading}
                     >
                         {isLoading ? 'Buscando...' : 'Buscar'}
@@ -136,7 +134,7 @@ function SearchUsuarioPage() {
                         </div>
                         <button
                             onClick={handleOpenModal}
-                            className="bg-[#28a745] hover:bg-[#28a745] text-white font-bold py-2 px-4 rounded mt-4"
+                            className="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded mt-4"
                         >
                             Modificar
                         </button>
@@ -211,7 +209,7 @@ function SearchUsuarioPage() {
                             </button>
                             <button
                                 onClick={handleSaveChanges}
-                                className="bg-[#28a745] hover:bg-[#28a745] text-white font-bold py-2 px-4 rounded"
+                                className="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded"
                             >
                                 Guardar Cambios
                             </button>

@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { FaExclamationTriangle, FaChevronDown, FaSignOutAlt } from 'react-icons/fa';  // Íconos de Font Awesome
+import { FaBars, FaChevronDown, FaSignOutAlt,FaTasks } from 'react-icons/fa'; // Íconos de Font Awesome
+import { AiFillDashboard, AiOutlineUserAdd, AiOutlineFileText, AiOutlineClockCircle } from 'react-icons/ai'; // Íconos de react-icons
 import { useNavigate } from 'react-router-dom';
 
 const Sidebar = () => {
   const [isScrolled, setIsScrolled] = useState(false);
-  const [openOperacionesTI, setOpenOperacionesTI] = useState(false); 
   const [openSolicitudes, setOpenSolicitudes] = useState(false); 
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false); // Estado para controlar si el sidebar está abierto o cerrado
   const navigate = useNavigate();
 
   // Detectar el scroll
@@ -29,48 +30,75 @@ const Sidebar = () => {
   const handleLogout = () => {
     localStorage.removeItem('usuario_asodi_ad');
     localStorage.clear(); 
-    navigate('/'); 
+    navigate('/');
+  };
+
+  // Función para abrir/cerrar el sidebar
+  const toggleSidebar = () => {
+    setIsSidebarOpen(!isSidebarOpen);
   };
 
   return (
     <div className="flex">
-      {/* Sidebar con posición fija y tamaño reducido */}
-      <div className={`fixed top-0 left-0 w-52 bg-teal-700 text-white h-screen flex flex-col md:w-60 lg:w-64 overflow-y-auto transition-all ${isScrolled ? 'shadow-lg bg-teal-800' : 'bg-teal-700'}`}>
-        {/* Encabezado */}
-        <div className={`p-5 transition-all ${isScrolled ? 'bg-teal-800' : 'bg-teal-700'}`}>
-          <h1 className="text-xl font-bold">ASODI AD</h1>
+      {/* Botón para abrir/cerrar el sidebar en la esquina superior izquierda */}
+      <button
+        className="absolute top-4 left-4 z-50 bg-teal-700 text-white p-2 rounded-full"
+        onClick={toggleSidebar}
+      >
+        <FaBars />
+      </button>
+
+      {/* Sidebar con animación de apertura de izquierda a derecha */}
+      <div className={`fixed top-0 left-0 h-screen bg-teal-700 text-white flex flex-col transition-all duration-300 overflow-y-auto ${isSidebarOpen ? 'w-64' : 'w-16'}`}>
+        
+        {/* Encabezado, ahora colocado debajo del ícono */}
+        <div className={`p-5 mt-12 transition-all flex items-center justify-center ${isSidebarOpen ? 'opacity-100 visible' : 'opacity-0 invisible'} ${isScrolled ? 'bg-teal-800' : 'bg-teal-700'}`}>
+          {isSidebarOpen && <h1 className="text-xl font-bold">ASODI AD</h1>}
         </div>
 
         {/* Menú de navegación */}
         <ul className="mt-5 flex-grow">
-          <li className="py-2 px-5 hover:bg-teal-600 cursor-pointer" onClick={() => navigate('/dashboard')}>
-            Dashboard
+          <li className="py-2 px-5 hover:bg-teal-600 cursor-pointer flex items-center" onClick={() => navigate('/dashboard')}>
+            <AiFillDashboard className="mr-2" />
+            {isSidebarOpen && <span>Dashboard</span>}
           </li>
-          <li className="py-2 px-5 hover:bg-teal-600 cursor-pointer" onClick={() => navigate('/add-paciente')}>
-            Agregar Paciente
+          
+          <li className="py-2 px-5 hover:bg-teal-600 cursor-pointer flex items-center" onClick={() => navigate('/add-paciente')}>
+            <AiOutlineUserAdd className="mr-2" />
+            {isSidebarOpen && <span>Agregar Paciente</span>}
           </li>
-          <li className="py-2 px-5 hover:bg-teal-600 cursor-pointer" onClick={() => navigate('/listapaciente')}>
-            Lista Pacientes
+
+          <li className="py-2 px-5 hover:bg-teal-600 cursor-pointer flex items-center" onClick={() => navigate('/listapaciente')}>
+            <AiOutlineFileText className="mr-2" />
+            {isSidebarOpen && <span>Lista Pacientes</span>}
           </li>
-          <li className="py-2 px-5 hover:bg-teal-600 cursor-pointer flex justify-between" onClick={() => navigate('/listapendientes')}>
-            Lista Pendientes para ser llamados
+
+          <li className="py-2 px-5 hover:bg-teal-600 cursor-pointer flex items-center" onClick={() => navigate('/listapendientes')}>
+            <AiOutlineClockCircle className="mr-2" />
+            {isSidebarOpen && <span>Lista Pendientes</span>}
           </li>
-          <li className="py-2 px-5 hover:bg-teal-600 cursor-pointer flex justify-between" onClick={() => navigate('/listaproceso')}>
-            Lista Pendientes para ser operados 
+          <li className="py-2 px-5 hover:bg-teal-600 cursor-pointer flex items-center" onClick={() => navigate('/listaproceso')}>
+            <FaTasks  className="mr-2" />
+            {isSidebarOpen && <span>Lista En Proceso</span>}
           </li>
 
           {/* Submenú Solicitudes */}
           <li className="py-2 px-5 hover:bg-teal-600 cursor-pointer flex items-center justify-between" onClick={() => setOpenSolicitudes(!openSolicitudes)}>
-            <div className="flex items-center">Solicitudes</div>
-            <FaChevronDown className={`${openSolicitudes ? 'rotate-180' : ''} transition-transform duration-300`} />
+            <div className="flex items-center">
+              <AiOutlineFileText className="mr-2" />
+              {isSidebarOpen && <span>Solicitudes</span>}
+            </div>
+            {isSidebarOpen && <FaChevronDown className={`${openSolicitudes ? 'rotate-180' : ''} transition-transform duration-300`} />}
           </li>
-          {openSolicitudes && (
+          {openSolicitudes && isSidebarOpen && (
             <ul className="ml-4">
               <li className="py-2 px-5 hover:bg-teal-600 cursor-pointer" onClick={() => navigate('/addsolicitudes')}>
-                Crear Solicitud
+                <AiOutlineUserAdd className="mr-2" />
+                {isSidebarOpen && <span>Crear Solicitud</span>}
               </li>
               <li className="py-2 px-5 hover:bg-teal-600 cursor-pointer" onClick={() => navigate('/listasolicitudes')}>
-                Ver Solicitudes
+                <AiOutlineFileText className="mr-2" />
+                {isSidebarOpen && <span>Ver Solicitudes</span>}
               </li>
             </ul>
           )}
@@ -80,13 +108,13 @@ const Sidebar = () => {
         <div className="p-5">
           <div className="py-2 hover:bg-red-600 cursor-pointer flex items-center justify-center mt-5" onClick={handleLogout}>
             <FaSignOutAlt className="mr-2" />
-            Cerrar sesión
+            {isSidebarOpen && <span>Cerrar sesión</span>}
           </div>
         </div>
       </div>
 
       {/* El contenido de la página se desplaza junto al Sidebar */}
-      <div className="ml-52 flex-grow p-8">
+      <div className={`transition-all duration-300 ${isSidebarOpen ? 'ml-64' : 'ml-16'} flex-grow p-8`}>
         {/* Aquí va el contenido de la página */}
       </div>
     </div>

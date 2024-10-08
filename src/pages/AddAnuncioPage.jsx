@@ -90,15 +90,13 @@ const AddAnuncioPage = () => {
     };
 
     return (
-        <div className="flex h-screen overflow-hidden">
-            {/* SidebarAdmin fijo */}
-            <div className="w-64 bg-teal-700 text-white fixed h-screen">
-                <SidebarAdmin />
-            </div>
+        <div className="flex h-screen">
+            {/* SidebarAdmin */}
+            <SidebarAdmin />
 
             {/* Contenido principal */}
-            <div className="flex-grow p-10 bg-gray-100 ml-64 overflow-y-auto">
-                <h1 className="text-4xl font-bold mb-4 text-center text-teal-700">Crear Anuncio</h1>
+            <div className="flex-grow max-w-4xl mx-auto p-6 bg-gray-100 shadow-md rounded-lg mt-10">
+                <h1 className="text-3xl font-bold mb-4 text-center text-teal-700">Crear Anuncio</h1>
 
                 {/* Mostrar notificación */}
                 <Notification message={message} type={messageType} />

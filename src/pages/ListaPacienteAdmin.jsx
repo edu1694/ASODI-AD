@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import SidebarAdmin from '../components/SidebarAdmin.jsx'; // Usar SidebarAdmin
+import SidebarAdmin from '../components/SidebarAdmin.jsx';
+import FiltroPaciente from '../components/FiltroPaciente.jsx'; // Importamos el componente de filtros
 import { baseUrl } from '../api/asodi.api.js';
 
 // Función para formatear las fechas en formato YYYY-MM-DD
@@ -17,6 +18,9 @@ const ListaPacienteAdmin = () => {
   const [pacientes, setPacientes] = useState([]);
   const [mensaje, setMensaje] = useState(null);
   const [cargando, setCargando] = useState(true);
+  const [rutFiltro, setRutFiltro] = useState('');
+  const [fechaFiltro, setFechaFiltro] = useState('');
+  const [estadoFiltro, setEstadoFiltro] = useState('Todos');
   const navigate = useNavigate();
 
   // Función para obtener los pacientes desde la API
@@ -29,10 +33,10 @@ const ListaPacienteAdmin = () => {
         // Formatear las fechas antes de asignarlas al estado
         const pacientesFormateados = response.data.map(paciente => ({
           ...paciente,
-          fecha_recepcion: formatDateToYYYYMMDD(paciente.fecha_recepcion), // Formatear la fecha de recepción
-          reg_primer_llamado: formatDateToYYYYMMDD(paciente.reg_primer_llamado), // Formatear el primer llamado
-          reg_segundo_llamado: formatDateToYYYYMMDD(paciente.reg_segundo_llamado), // Formatear el segundo llamado
-          reg_tercer_llamado: formatDateToYYYYMMDD(paciente.reg_tercer_llamado), // Formatear el tercer llamado
+          fecha_recepcion: formatDateToYYYYMMDD(paciente.fecha_recepcion),
+          reg_primer_llamado: formatDateToYYYYMMDD(paciente.reg_primer_llamado),
+          reg_segundo_llamado: formatDateToYYYYMMDD(paciente.reg_segundo_llamado),
+          reg_tercer_llamado: formatDateToYYYYMMDD(paciente.reg_tercer_llamado),
         }));
         setPacientes(pacientesFormateados);
       } else {
@@ -46,19 +50,28 @@ const ListaPacienteAdmin = () => {
     }
   };
 
-  // useEffect para cargar los pacientes cuando se monte el componente
   useEffect(() => {
     fetchPacientes();
   }, []);
 
   // Función para redirigir al detalle de un paciente
   const handleRowClick = (id_planilla) => {
-    navigate(`/admin/paciente/${id_planilla}`);  // Cambiamos la ruta para ir a DetallePacienteAdmin
+    navigate(`/admin/paciente/${id_planilla}`);
   };
+
+  // Filtrar los pacientes según los filtros seleccionados
+  const pacientesFiltrados = pacientes.filter((paciente) => {
+    const rutMatch = rutFiltro === '' || paciente.rut.includes(rutFiltro);
+    const fechaMatch = fechaFiltro === '' || paciente.fecha_recepcion === fechaFiltro;
+    const estadoMatch = estadoFiltro === 'Todos' || paciente.estado_paciente === estadoFiltro;
+    return rutMatch && fechaMatch && estadoMatch;
+  });
 
   return (
     <div className="flex">
-      <SidebarAdmin />  {/* Usamos SidebarAdmin en vez de Sidebar */}
+      <SidebarAdmin />  {/* Usamos SidebarAdmin */}
+
+      {/* Panel principal */}
       <div className="flex-grow max-w-5xl mx-auto mt-10 p-6 bg-gray-100 shadow-md rounded-lg">
         <h1 className="text-3xl font-bold mb-6 text-green-600">Lista de Pacientes - Admin</h1>
 
@@ -72,8 +85,8 @@ const ListaPacienteAdmin = () => {
         {/* Mostrar estado de cargando */}
         {cargando ? (
           <p className="text-gray-700 text-xl">Cargando pacientes...</p>
-        ) : pacientes.length === 0 && !mensaje ? (
-          <p className="text-gray-700 text-xl">No hay pacientes registrados.</p>
+        ) : pacientesFiltrados.length === 0 && !mensaje ? (
+          <p className="text-gray-700 text-xl">No se encontraron pacientes.</p>
         ) : (
           <table className="min-w-full bg-white rounded-lg shadow-lg">
             <thead className="bg-green-500 text-black">
@@ -88,19 +101,19 @@ const ListaPacienteAdmin = () => {
               </tr>
             </thead>
             <tbody className="text-black">
-              {/* Iterar sobre los pacientes y mostrarlos en la tabla */}
-              {pacientes.map((paciente) => (
+              {/* Iterar sobre los pacientes filtrados */}
+              {pacientesFiltrados.map((paciente) => (
                 <tr 
                   key={paciente.id_planilla}  
                   className="border-b border-gray-200 hover:bg-green-100 cursor-pointer"
-                  onClick={() => handleRowClick(paciente.id_planilla)}  // Usamos id_planilla para la navegación
+                  onClick={() => handleRowClick(paciente.id_planilla)}
                 >
-                  <td className="py-3 px-6">{paciente.id_planilla}</td> {/* Mostrar ID */}
-                  <td className="py-3 px-6">{paciente.rut}</td> {/* Mostrar RUT */}
-                  <td className="py-3 px-6">{paciente.nombre_paciente}</td> {/* Mostrar Nombre */}
-                  <td className="py-3 px-6">{paciente.apellido_paciente}</td> {/* Mostrar Apellido */}
-                  <td className="py-3 px-6">{paciente.fecha_recepcion}</td> {/* Mostrar Fecha Recepción */}
-                  <td className="py-3 px-6">{paciente.convenios}</td> {/* Mostrar Convenio */}
+                  <td className="py-3 px-6">{paciente.id_planilla}</td>
+                  <td className="py-3 px-6">{paciente.rut}</td>
+                  <td className="py-3 px-6">{paciente.nombre_paciente}</td>
+                  <td className="py-3 px-6">{paciente.apellido_paciente}</td>
+                  <td className="py-3 px-6">{paciente.fecha_recepcion}</td>
+                  <td className="py-3 px-6">{paciente.convenios}</td>
                   <td className="py-3 px-6">
                     <span
                       className={`${
@@ -124,6 +137,15 @@ const ListaPacienteAdmin = () => {
           </table>
         )}
       </div>
+      {/* Panel derecho con los filtros */}
+      <FiltroPaciente
+        estadoFiltro={estadoFiltro}
+        handleEstadoChange={(e) => setEstadoFiltro(e.target.value)}
+        fechaFiltro={fechaFiltro}
+        handleFechaChange={setFechaFiltro} // Actualizamos para que acepte el valor directamente
+        rutFiltro={rutFiltro}
+        handleRutChange={setRutFiltro}
+      />
     </div>
   );
 };

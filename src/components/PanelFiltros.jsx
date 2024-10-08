@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 
-const PanelFiltros = ({ estadoFiltro, handleEstadoChange, fechaFiltro, handleFechaChange, solicitudFiltro, handleSolicitudChange }) => {
+const PanelFiltros = ({ estadoFiltro, handleEstadoChange, fechaFiltro, handleFechaChange, solicitudFiltro, handleSolicitudChange, verificarSolicitud }) => {
   const [errorSolicitud, setErrorSolicitud] = useState(''); // Estado para manejar el mensaje de error
+  const [idNoExiste, setIdNoExiste] = useState(false); // Estado para manejar el mensaje de "ID no existe"
 
   const handleSolicitudInputChange = (e) => {
     const value = e.target.value;
@@ -10,8 +11,19 @@ const PanelFiltros = ({ estadoFiltro, handleEstadoChange, fechaFiltro, handleFec
     if (/^\d*$/.test(value)) {  // Solo permitir dígitos numéricos
       setErrorSolicitud('');     // Limpiar mensaje de error si el valor es válido
       handleSolicitudChange(value);  // Actualizar el filtro de solicitud con el valor numérico
+
+      // Si la solicitud tiene valor, llamar a la función verificarSolicitud para ver si existe
+      if (value) {
+        verificarSolicitud(value, (existe) => {
+          setIdNoExiste(!existe); // Actualizar estado si el ID no existe
+        });
+      } else {
+        setErrorSolicitud(''); // Limpiar mensaje si el campo está vacío
+        setIdNoExiste(false);  // Limpiar mensaje de ID inexistente si está vacío
+      }
     } else {
       setErrorSolicitud('Solo se aceptan caracteres numéricos.'); // Mostrar error si hay caracteres no numéricos
+      setIdNoExiste(false); // Limpiar el estado de ID inexistente al mostrar el error numérico
     }
   };
 
@@ -69,8 +81,13 @@ const PanelFiltros = ({ estadoFiltro, handleEstadoChange, fechaFiltro, handleFec
           placeholder="Ingrese ID de Solicitud"
           className="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
         />
+        {/* Mensaje de error si el usuario ingresa caracteres no válidos */}
         {errorSolicitud && (
-          <p className="text-red-500 mt-2">{errorSolicitud}</p> // Mostrar mensaje de error si hay un problema
+          <p className="text-red-500 mt-2">{errorSolicitud}</p>
+        )}
+        {/* Mensaje de error si el ID no existe */}
+        {idNoExiste && !errorSolicitud && (
+          <p className="text-red-500 mt-2">El ID de solicitud no existe.</p>
         )}
       </div>
     </div>
