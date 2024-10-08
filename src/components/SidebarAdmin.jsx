@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { FaChevronDown } from "react-icons/fa";
 import {
   AiFillBell,
@@ -13,11 +13,29 @@ import {
 import { useNavigate } from "react-router-dom";
 
 const SidebarAdmin = () => {
-  const [openUsuarios, setOpenUsuarios] = useState(false); // Estado para el submenú de usuarios
-  const [openSolicitudes, setOpenSolicitudes] = useState(false); // Estado para el submenú de solicitudes
-  const [openAnuncios, setOpenAnuncios] = useState(false); // Estado para el submenú de anuncios
-  const [openPacientes, setOpenPacientes] = useState(false); // Estado para el submenú de pacientes
+  const [isScrolled, setIsScrolled] = useState(false);
+  const [openUsuarios, setOpenUsuarios] = useState(false);
+  const [openSolicitudes, setOpenSolicitudes] = useState(false);
+  const [openAnuncios, setOpenAnuncios] = useState(false);
+  const [openPacientes, setOpenPacientes] = useState(false);
   const navigate = useNavigate();
+
+  // Detectar el scroll
+  useEffect(() => {
+    const handleScroll = () => {
+      if (window.scrollY > 50) {
+        setIsScrolled(true);
+      } else {
+        setIsScrolled(false);
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll);
+
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
+  }, []);
 
   // Función para cerrar sesión
   const handleLogout = () => {
@@ -26,9 +44,9 @@ const SidebarAdmin = () => {
   };
 
   return (
-    <div className="flex h-screen">
+    <div className="flex">
       {/* SidebarAdmin */}
-      <div className="fixed top-0 left-0 w-64 h-full bg-teal-700 text-white flex flex-col md:w-72 lg:w-80 overflow-y-auto">
+      <div className={`fixed top-0 left-0 w-52 bg-teal-700 text-white h-screen flex flex-col md:w-60 lg:w-64 overflow-y-auto transition-all ${isScrolled ? 'shadow-lg bg-teal-800' : 'bg-teal-700'}`}>
         <div className="p-5">
           <h1 className="text-xl font-bold">ASODI ADMIN</h1>
         </div>
@@ -183,35 +201,10 @@ const SidebarAdmin = () => {
             </ul>
           )}
 
-          <li className="py-2 px-5 hover:bg-teal-600 cursor-pointer flex justify-between">
-            Tablero{" "}
-            <span className="bg-orange-500 text-xs px-2 py-1 rounded">
-              Beta
-            </span>
-          </li>
-
-          <li className="py-2 px-5 hover:bg-teal-600 cursor-pointer">Tareas</li>
-
-          <li
-            className="py-2 px-5 hover:bg-teal-600 cursor-pointer"
-            onClick={() => navigate("/activos")}
-          >
-            Activos
-          </li>
-
-          <li
-            className="py-2 px-5 hover:bg-teal-600 cursor-pointer"
-            onClick={() => navigate("/informes")}
-          >
-            Informes
-          </li>
+    
         </ul>
         {/* Botón de cerrar sesión */}
         <div className="p-5">
-          <div className="py-2 hover:bg-teal-600 cursor-pointer">Freshchat</div>
-          <div className="py-2 hover:bg-teal-600 cursor-pointer">
-            Switcher de Freshworks
-          </div>
           <div
             className="py-2 hover:bg-red-600 cursor-pointer text-center mt-5"
             onClick={handleLogout}
@@ -219,6 +212,11 @@ const SidebarAdmin = () => {
             Cerrar sesión
           </div>
         </div>
+      </div>
+
+      {/* El contenido de la página se desplaza junto al Sidebar */}
+      <div className="ml-52 flex-grow p-8">
+        {/* Aquí va el contenido de la página */}
       </div>
     </div>
   );

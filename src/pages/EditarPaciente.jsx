@@ -77,12 +77,17 @@ const EditarPaciente = () => {
 
           // Deshabilitamos los campos que ya tienen datos, excepto observación
           const initialDisabledFields = {};
-          Object.keys(editData).forEach((field) => {
-            if (pacienteEncontrado[field] && field !== 'observacion') { // Observación siempre habilitada
+          Object.keys(pacienteEncontrado).forEach((field) => {
+            if (pacienteEncontrado[field] && field !== 'observacion') {
               initialDisabledFields[field] = true; // Deshabilitamos campos con datos
             }
           });
           setDisabledFields(initialDisabledFields);
+
+          // Si el estado del paciente es "Rechazado", deshabilitamos el botón de avanzar estado
+          if (pacienteEncontrado.estado_paciente === 'R') {
+            setBotonDeshabilitado(true); // Deshabilitar el botón
+          }
         } else {
           setMensaje('Paciente no encontrado.');
         }
@@ -113,29 +118,7 @@ const EditarPaciente = () => {
     return regex.test(date) ? date : null;
   };
 
-  // Función para avanzar el estado del paciente
-  const avanzarEstado = async () => {
-    const estadosPermitidos = ['P', 'E', 'O', 'A']; // Estados permitidos: Pendiente, En Proceso, Operado, Alta
-    const estadoActualIndex = estadosPermitidos.indexOf(editData.estado_paciente);
-
-    if (estadoActualIndex < estadosPermitidos.length - 1) {
-      // Avanzamos al siguiente estado permitido
-      const nuevoEstado = estadosPermitidos[estadoActualIndex + 1];
-      setEditData((prevState) => ({ ...prevState, estado_paciente: nuevoEstado }));
-
-      // Actualizamos el estado del paciente en el servidor
-      try {
-        const updatedPlanilla = { ...planilla, estado_paciente: nuevoEstado };
-        await axios.put(`${baseUrl}/asodi/v1/planillas-convenio/${id}/`, updatedPlanilla);
-        setMensaje('Estado del paciente actualizado correctamente.');
-      } catch (error) {
-        console.error('Error al actualizar el estado del paciente:', error);
-        setMensaje('Hubo un error al actualizar el estado del paciente.');
-      }
-    }
-  };
-
-  // Guardar los datos actualizados del paciente
+  // Función para guardar los cambios en el paciente
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -184,6 +167,28 @@ const EditarPaciente = () => {
     }
   };
 
+  // Función para avanzar el estado del paciente
+  const avanzarEstado = async () => {
+    const estadosPermitidos = ['P', 'E', 'O', 'A']; // Estados permitidos: Pendiente, En Proceso, Operado, Alta
+    const estadoActualIndex = estadosPermitidos.indexOf(editData.estado_paciente);
+
+    if (estadoActualIndex < estadosPermitidos.length - 1) {
+      // Avanzamos al siguiente estado permitido
+      const nuevoEstado = estadosPermitidos[estadoActualIndex + 1];
+      setEditData((prevState) => ({ ...prevState, estado_paciente: nuevoEstado }));
+
+      // Actualizamos el estado del paciente en el servidor
+      try {
+        const updatedPlanilla = { ...planilla, estado_paciente: nuevoEstado };
+        await axios.put(`${baseUrl}/asodi/v1/planillas-convenio/${id}/`, updatedPlanilla);
+        setMensaje('Estado del paciente actualizado correctamente.');
+      } catch (error) {
+        console.error('Error al actualizar el estado del paciente:', error);
+        setMensaje('Hubo un error al actualizar el estado del paciente.');
+      }
+    }
+  };
+
   // Mostrar el pop-up de confirmación para avanzar estado
   const confirmarAvanzarEstado = () => {
     setMostrarConfirmacion(true);
@@ -220,7 +225,6 @@ const EditarPaciente = () => {
     if (!motivoRechazo.trim()) {
       setMostrarErrorRechazo(true); // Mostrar error si el motivo rechazo está vacío
     } else {
-      // Aquí puedes agregar lógica adicional si es necesario
       setEditData({ ...editData, estado_paciente: 'R' });
       handleSubmit(); // Guardamos los cambios con el estado de "Rechazado"
       cerrarRechazarModal();
@@ -234,20 +238,22 @@ const EditarPaciente = () => {
 
   // Función para manejar la cancelación y redirigir al Detalle del Paciente
   const handleCancel = () => {
-    navigate(`/paciente/${id}`);  // Redirige a la página de detalles
+    navigate(`/paciente/${id}`); // Redirige a la página de detalles
   };
 
   return (
     <div className="flex">
       <Sidebar /> {/* Mantenemos el Sidebar si lo necesitas */}
       <div className="flex-grow max-w-5xl mx-auto mt-10 p-8 bg-white shadow-lg rounded-lg">
-
         {/* Pop-up de advertencia al entrar a la página */}
         {mostrarAdvertencia && (
           <div className="fixed inset-0 flex items-center justify-center z-50 bg-gray-900 bg-opacity-50">
             <div className="bg-yellow-100 p-6 rounded-lg shadow-lg text-center">
               <h2 className="text-2xl font-semibold mb-4">Advertencia</h2>
-              <p className="mb-4">Recuerda que la actualización de datos de los pacientes solo se permite una única vez. Una vez rellenados, los campos serán deshabilitados.</p>
+              <p className="mb-4">
+                Recuerda que la actualización de datos de los pacientes solo se permite una única vez. Una vez rellenados,
+                los campos serán deshabilitados.
+              </p>
               <button
                 onClick={cerrarAdvertencia}
                 className="bg-yellow-500 text-white px-4 py-2 rounded-md shadow-md hover:bg-yellow-600 transition duration-300"
@@ -287,7 +293,9 @@ const EditarPaciente = () => {
           <div className="fixed inset-0 flex items-center justify-center z-50 bg-gray-900 bg-opacity-50">
             <div className="bg-white p-6 rounded-lg shadow-lg text-center">
               <h2 className="text-2xl font-semibold mb-4">Rechazar Paciente</h2>
-              <p className="mb-4">El estado del paciente será cambiado a "Rechazado". Por favor, ingresa el motivo del rechazo:</p>
+              <p className="mb-4">
+                El estado del paciente será cambiado a "Rechazado". Por favor, ingresa el motivo del rechazo:
+              </p>
               <textarea
                 value={motivoRechazo}
                 onChange={(e) => setMotivoRechazo(e.target.value)}
@@ -349,11 +357,21 @@ const EditarPaciente = () => {
               <div className="bg-gray-50 p-6 rounded-lg shadow-md space-y-4">
                 <h2 className="text-2xl font-semibold text-gray-800">Información Personal</h2>
                 <div className="grid grid-cols-2 gap-4 text-gray-700">
-                  <p><strong>ID:</strong> {paciente.id_planilla}</p>
-                  <p><strong>Nombre:</strong> {paciente.nombre_paciente}</p>
-                  <p><strong>RUT:</strong> {paciente.rut}</p>
-                  <p><strong>Apellido:</strong> {paciente.apellido_paciente}</p>
-                  <p><strong>Convenios:</strong> {paciente.convenios}</p>
+                  <p>
+                    <strong>ID:</strong> {paciente.id_planilla}
+                  </p>
+                  <p>
+                    <strong>Nombre:</strong> {paciente.nombre_paciente}
+                  </p>
+                  <p>
+                    <strong>RUT:</strong> {paciente.rut}
+                  </p>
+                  <p>
+                    <strong>Apellido:</strong> {paciente.apellido_paciente}
+                  </p>
+                  <p>
+                    <strong>Convenios:</strong> {paciente.convenios}
+                  </p>
                 </div>
               </div>
 
@@ -364,28 +382,44 @@ const EditarPaciente = () => {
                   <h2 className="text-2xl font-semibold text-gray-800">Estado del Paciente</h2>
                 </div>
                 <p>
-                  <strong>Estado del Paciente:</strong> 
-                  <span className={`ml-2 inline-block px-3 py-1 rounded-full text-sm text-white ${
-                    editData.estado_paciente === 'A' ? 'bg-green-600' :
-                    editData.estado_paciente === 'E' ? 'bg-gray-500' :
-                    editData.estado_paciente === 'P' ? 'bg-yellow-500' :  
-                    editData.estado_paciente === 'O' ? 'bg-blue-600' :
-                    editData.estado_paciente === 'R' ? 'bg-red-500' : 'bg-gray-400'
-                  }`}>
-                    {editData.estado_paciente === 'A' ? 'Alta' : 
-                    editData.estado_paciente === 'E' ? 'En Proceso' :
-                    editData.estado_paciente === 'P' ? 'Pendiente' :  
-                    editData.estado_paciente === 'O' ? 'Operado' : 
-                    editData.estado_paciente === 'R' ? 'Rechazado' : 'Desconocido'}
+                  <strong>Estado del Paciente:</strong>
+                  <span
+                    className={`ml-2 inline-block px-3 py-1 rounded-full text-sm text-white ${
+                      editData.estado_paciente === 'A'
+                        ? 'bg-green-600'
+                        : editData.estado_paciente === 'E'
+                        ? 'bg-gray-500'
+                        : editData.estado_paciente === 'P'
+                        ? 'bg-yellow-500'
+                        : editData.estado_paciente === 'O'
+                        ? 'bg-blue-600'
+                        : editData.estado_paciente === 'R'
+                        ? 'bg-red-500'
+                        : 'bg-gray-400'
+                    }`}
+                  >
+                    {editData.estado_paciente === 'A'
+                      ? 'Alta'
+                      : editData.estado_paciente === 'E'
+                      ? 'En Proceso'
+                      : editData.estado_paciente === 'P'
+                      ? 'Pendiente'
+                      : editData.estado_paciente === 'O'
+                      ? 'Operado'
+                      : editData.estado_paciente === 'R'
+                      ? 'Rechazado'
+                      : 'Desconocido'}
                   </span>
                 </p>
 
                 <button
                   type="button"
                   onClick={confirmarAvanzarEstado} // Muestra el pop-up de confirmación
-                  disabled={editData.estado_paciente === 'A'} // Deshabilitar si el estado es "Alta"
+                  disabled={editData.estado_paciente === 'A' || editData.estado_paciente === 'R'} // Deshabilitar si el estado es "Alta" o "Rechazado"
                   className={`${
-                    editData.estado_paciente === 'A' ? 'bg-gray-400 cursor-not-allowed' : 'bg-blue-500 hover:bg-blue-600'
+                    editData.estado_paciente === 'A' || editData.estado_paciente === 'R'
+                      ? 'bg-gray-400 cursor-not-allowed'
+                      : 'bg-blue-500 hover:bg-blue-600'
                   } text-white px-4 py-2 mt-4 rounded-md shadow-md transition duration-300`}
                 >
                   Avanzar Estado
