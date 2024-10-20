@@ -6,27 +6,26 @@ import Sidebar from '../components/Sidebar.jsx';
 import { baseUrl } from '../api/asodi.api.js';
 
 const EditarPaciente = () => {
-  const { id } = useParams(); // Capturamos el id_planilla desde la URL
+  const { id } = useParams();
   const navigate = useNavigate();
-  const [paciente, setPaciente] = useState(null); // Almacenamos los datos del paciente
-  const [mensaje, setMensaje] = useState(null); // Mensaje de error o éxito
-  const [cargando, setCargando] = useState(true); // Estado de carga
-  const [botonDeshabilitado, setBotonDeshabilitado] = useState(false); // Estado para deshabilitar el botón de guardar
-  const [mostrarConfirmacion, setMostrarConfirmacion] = useState(false); // Estado para mostrar el pop-up de confirmación
-  const [mostrarExito, setMostrarExito] = useState(false); // Estado para mostrar el pop-up de éxito
-  const [mostrarAdvertencia, setMostrarAdvertencia] = useState(true); // Estado para mostrar el pop-up de advertencia
-  const [mostrarRechazarModal, setMostrarRechazarModal] = useState(false); // Estado para mostrar el modal de rechazo
-  const [motivoRechazo, setMotivoRechazo] = useState(''); // Estado para almacenar el motivo de rechazo
-  const [mostrarErrorRechazo, setMostrarErrorRechazo] = useState(false); // Estado para mostrar el error de motivo rechazo
-  const [disabledFields, setDisabledFields] = useState({}); // Para deshabilitar los campos que ya fueron editados
+  const [paciente, setPaciente] = useState(null);
+  const [mensaje, setMensaje] = useState(null);
+  const [cargando, setCargando] = useState(true);
+  const [botonDeshabilitado, setBotonDeshabilitado] = useState(false);
+  const [mostrarConfirmacion, setMostrarConfirmacion] = useState(false);
+  const [mostrarExito, setMostrarExito] = useState(false);
+  const [mostrarAdvertencia, setMostrarAdvertencia] = useState(true);
+  const [mostrarRechazarModal, setMostrarRechazarModal] = useState(false);
+  const [motivoRechazo, setMotivoRechazo] = useState('');
+  const [mostrarErrorRechazo, setMostrarErrorRechazo] = useState(false);
+  const [disabledFields, setDisabledFields] = useState({});
 
-  // Estado para almacenar todos los datos del paciente
   const [planilla, setPlanilla] = useState({
     nombre_paciente: '',
     apellido_paciente: '',
     rut: '',
     convenios: '',
-    estado_paciente: '', // Incluimos el estado del paciente
+    estado_paciente: '',
     doctor: '',
     fecha_cirugia: '',
     fecha_evaluacion: '',
@@ -36,9 +35,9 @@ const EditarPaciente = () => {
     reg_tercer_llamado: '',
     observacion: '',
     motivo_rechazo: '',
+    fecha_recepcion: '',
   });
 
-  // Estado para los datos editables del formulario
   const [editData, setEditData] = useState({
     doctor: '',
     fecha_cirugia: '',
@@ -48,10 +47,9 @@ const EditarPaciente = () => {
     reg_segundo_llamado: '',
     reg_tercer_llamado: '',
     observacion: '',
-    estado_paciente: '', // Campo de estado del paciente
+    estado_paciente: '',
   });
 
-  // Obtener los datos del paciente por id_planilla
   useEffect(() => {
     const fetchPaciente = async () => {
       try {
@@ -60,9 +58,8 @@ const EditarPaciente = () => {
         if (response.data) {
           const pacienteEncontrado = response.data;
           setPaciente(pacienteEncontrado);
-          setPlanilla(pacienteEncontrado); // Almacenamos todos los datos en el estado `planilla`
+          setPlanilla(pacienteEncontrado);
 
-          // Inicializamos editData con los datos actuales
           setEditData({
             doctor: pacienteEncontrado.doctor || '',
             fecha_cirugia: pacienteEncontrado.fecha_cirugia || '',
@@ -72,21 +69,19 @@ const EditarPaciente = () => {
             reg_segundo_llamado: pacienteEncontrado.reg_segundo_llamado || '',
             reg_tercer_llamado: pacienteEncontrado.reg_tercer_llamado || '',
             observacion: pacienteEncontrado.observacion || '',
-            estado_paciente: pacienteEncontrado.estado_paciente || '', // Inicializamos con el estado actual
+            estado_paciente: pacienteEncontrado.estado_paciente || '',
           });
 
-          // Deshabilitamos los campos que ya tienen datos, excepto observación
           const initialDisabledFields = {};
           Object.keys(pacienteEncontrado).forEach((field) => {
             if (pacienteEncontrado[field] && field !== 'observacion') {
-              initialDisabledFields[field] = true; // Deshabilitamos campos con datos
+              initialDisabledFields[field] = true;
             }
           });
           setDisabledFields(initialDisabledFields);
 
-          // Si el estado del paciente es "Rechazado", deshabilitamos el botón de avanzar estado
           if (pacienteEncontrado.estado_paciente === 'R') {
-            setBotonDeshabilitado(true); // Deshabilitar el botón
+            setBotonDeshabilitado(true);
           }
         } else {
           setMensaje('Paciente no encontrado.');
@@ -102,7 +97,6 @@ const EditarPaciente = () => {
     fetchPaciente();
   }, [id]);
 
-  // Manejar cambios en los inputs del formulario
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setEditData({
@@ -111,18 +105,60 @@ const EditarPaciente = () => {
     });
   };
 
-  // Validar el formato de fecha
   const validateDate = (date) => {
     if (!date) return null;
-    const regex = /^\d{4}-\d{2}-\d{2}$/; // Asegurar que el formato sea YYYY-MM-DD
+    const regex = /^\d{4}-\d{2}-\d{2}$/;
     return regex.test(date) ? date : null;
   };
 
-  // Función para guardar los cambios en el paciente
+  const avanzarEstado = async () => {
+    const estadosPermitidos = ['P', 'E', 'O', 'A'];
+    const estadoActualIndex = estadosPermitidos.indexOf(editData.estado_paciente);
+
+    if (estadoActualIndex < estadosPermitidos.length - 1) {
+      const nuevoEstado = estadosPermitidos[estadoActualIndex + 1];
+      setEditData((prevState) => ({ ...prevState, estado_paciente: nuevoEstado }));
+
+      let nuevaFechaRecepcion = planilla.fecha_recepcion;
+      if (nuevoEstado === 'E') {
+        const ahora = new Date();
+        const localDate = new Intl.DateTimeFormat('sv-SE', {
+          year: 'numeric',
+          month: '2-digit',
+          day: '2-digit',
+          hour: '2-digit',
+          minute: '2-digit',
+          second: '2-digit',
+          hourCycle: 'h23',
+          timeZone: 'America/Santiago',
+        }).format(ahora);
+        nuevaFechaRecepcion = `${localDate.replace(' ', 'T')}-03:00`;
+      }
+
+      console.log('Nueva fecha_recepcion calculada:', nuevaFechaRecepcion);
+
+      try {
+        const updatedPlanilla = { ...planilla, estado_paciente: nuevoEstado, fecha_recepcion: nuevaFechaRecepcion };
+        console.log('Datos enviados al servidor para actualizar:', updatedPlanilla);
+
+        const response = await axios.put(`${baseUrl}/asodi/v1/planillas-convenio/${id}/`, updatedPlanilla);
+        if (response.status === 200) {
+          console.log('Respuesta exitosa del servidor:', response.data);
+          setMensaje('Estado del paciente actualizado correctamente.');
+          setPlanilla(updatedPlanilla);
+        } else {
+          console.warn('El servidor respondió, pero el estado no fue 200:', response);
+        }
+      } catch (error) {
+        console.error('Error al actualizar el estado del paciente:', error);
+        setMensaje('Hubo un error al actualizar el estado del paciente.');
+      }
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Validamos y formateamos los campos de fecha antes de enviar
     const validData = {
       ...editData,
       fecha_cirugia: validateDate(editData.fecha_cirugia),
@@ -131,22 +167,21 @@ const EditarPaciente = () => {
       control_mes: validateDate(editData.control_mes),
       reg_segundo_llamado: validateDate(editData.reg_segundo_llamado),
       reg_tercer_llamado: validateDate(editData.reg_tercer_llamado),
-      motivo_rechazo: motivoRechazo, // Incluimos el motivo de rechazo en caso de que esté presente
+      motivo_rechazo: motivoRechazo,
     };
 
-    // Mezclamos los datos editados con los demás campos de la planilla
     const updatedPlanilla = {
-      ...planilla, // Incluimos todos los campos actuales de la planilla
-      ...validData, // Sobrescribimos solo los campos editados
+      ...planilla,
+      ...validData,
+      fecha_recepcion: planilla.estado_paciente === 'E' ? planilla.fecha_recepcion : undefined,
     };
 
     try {
       const response = await axios.put(`${baseUrl}/asodi/v1/planillas-convenio/${id}/`, updatedPlanilla);
       if (response.status === 200) {
-        setMostrarExito(true); // Mostrar el pop-up de éxito
+        setMostrarExito(true);
         setBotonDeshabilitado(true);
 
-        // Deshabilitamos los campos que se actualizaron, excepto observación
         const updatedDisabledFields = { ...disabledFields };
         Object.keys(editData).forEach((field) => {
           if (editData[field] && field !== 'observacion') {
@@ -155,7 +190,6 @@ const EditarPaciente = () => {
         });
         setDisabledFields(updatedDisabledFields);
 
-        // Ocultar el pop-up de éxito después de 1.5 segundos
         setTimeout(() => {
           setMostrarExito(false);
           navigate(`/paciente/${id}`);
@@ -167,85 +201,53 @@ const EditarPaciente = () => {
     }
   };
 
-  // Función para avanzar el estado del paciente
-  const avanzarEstado = async () => {
-    const estadosPermitidos = ['P', 'E', 'O', 'A']; // Estados permitidos: Pendiente, En Proceso, Operado, Alta
-    const estadoActualIndex = estadosPermitidos.indexOf(editData.estado_paciente);
-
-    if (estadoActualIndex < estadosPermitidos.length - 1) {
-      // Avanzamos al siguiente estado permitido
-      const nuevoEstado = estadosPermitidos[estadoActualIndex + 1];
-      setEditData((prevState) => ({ ...prevState, estado_paciente: nuevoEstado }));
-
-      // Actualizamos el estado del paciente en el servidor
-      try {
-        const updatedPlanilla = { ...planilla, estado_paciente: nuevoEstado };
-        await axios.put(`${baseUrl}/asodi/v1/planillas-convenio/${id}/`, updatedPlanilla);
-        setMensaje('Estado del paciente actualizado correctamente.');
-      } catch (error) {
-        console.error('Error al actualizar el estado del paciente:', error);
-        setMensaje('Hubo un error al actualizar el estado del paciente.');
-      }
-    }
-  };
-
-  // Mostrar el pop-up de confirmación para avanzar estado
   const confirmarAvanzarEstado = () => {
     setMostrarConfirmacion(true);
   };
 
-  // Confirmar avanzar estado desde el pop-up
   const confirmarAvance = () => {
-    avanzarEstado(); // Llamar a la función para avanzar el estado
-    setMostrarConfirmacion(false); // Cerrar el pop-up de confirmación
+    avanzarEstado();
+    setMostrarConfirmacion(false);
   };
 
-  // Cancelar avance de estado
   const cancelarAvance = () => {
     setMostrarConfirmacion(false);
   };
 
-  // Cerrar el pop-up de advertencia
   const cerrarAdvertencia = () => {
     setMostrarAdvertencia(false);
   };
 
-  // Abrir el modal de rechazo
   const handleRechazarPaciente = () => {
     setMostrarRechazarModal(true);
   };
 
-  // Cerrar el modal de rechazo
   const cerrarRechazarModal = () => {
     setMostrarRechazarModal(false);
   };
 
-  // Confirmar el rechazo del paciente
   const confirmarRechazo = () => {
     if (!motivoRechazo.trim()) {
-      setMostrarErrorRechazo(true); // Mostrar error si el motivo rechazo está vacío
+      setMostrarErrorRechazo(true);
     } else {
       setEditData({ ...editData, estado_paciente: 'R' });
-      handleSubmit(); // Guardamos los cambios con el estado de "Rechazado"
+      handleSubmit();
       cerrarRechazarModal();
     }
   };
 
-  // Cerrar el pop-up de error de rechazo
   const cerrarErrorRechazo = () => {
     setMostrarErrorRechazo(false);
   };
 
-  // Función para manejar la cancelación y redirigir al Detalle del Paciente
   const handleCancel = () => {
-    navigate(`/paciente/${id}`); // Redirige a la página de detalles
+    navigate(`/paciente/${id}`);
   };
 
   return (
     <div className="flex">
-      <Sidebar /> {/* Mantenemos el Sidebar si lo necesitas */}
+      <Sidebar />
       <div className="flex-grow max-w-5xl mx-auto mt-10 p-8 bg-white shadow-lg rounded-lg">
-        {/* Pop-up de advertencia al entrar a la página */}
         {mostrarAdvertencia && (
           <div className="fixed inset-0 flex items-center justify-center z-50 bg-gray-900 bg-opacity-50">
             <div className="bg-yellow-100 p-6 rounded-lg shadow-lg text-center">
@@ -264,7 +266,6 @@ const EditarPaciente = () => {
           </div>
         )}
 
-        {/* Pop-up de confirmación para avanzar estado */}
         {mostrarConfirmacion && (
           <div className="fixed inset-0 flex items-center justify-center z-50 bg-gray-900 bg-opacity-50">
             <div className="bg-white p-6 rounded-lg shadow-lg text-center">
@@ -288,7 +289,6 @@ const EditarPaciente = () => {
           </div>
         )}
 
-        {/* Modal para Rechazar Paciente */}
         {mostrarRechazarModal && (
           <div className="fixed inset-0 flex items-center justify-center z-50 bg-gray-900 bg-opacity-50">
             <div className="bg-white p-6 rounded-lg shadow-lg text-center">
@@ -320,7 +320,6 @@ const EditarPaciente = () => {
           </div>
         )}
 
-        {/* Pop-up de error por motivo de rechazo vacío */}
         {mostrarErrorRechazo && (
           <div className="fixed inset-0 flex items-center justify-center z-50 bg-gray-900 bg-opacity-50">
             <div className="bg-red-100 p-6 rounded-lg shadow-lg text-center">
@@ -336,7 +335,6 @@ const EditarPaciente = () => {
           </div>
         )}
 
-        {/* Pop-up de éxito al guardar cambios */}
         {mostrarExito && (
           <div className="fixed inset-0 flex items-center justify-center z-50 bg-gray-900 bg-opacity-50">
             <div className="bg-green-100 p-6 rounded-lg shadow-lg text-center">
@@ -353,7 +351,6 @@ const EditarPaciente = () => {
             <h1 className="text-4xl font-bold mb-6 text-green-600">Editar Datos del Paciente</h1>
 
             <div className="space-y-6">
-              {/* Información Personal */}
               <div className="bg-gray-50 p-6 rounded-lg shadow-md space-y-4">
                 <h2 className="text-2xl font-semibold text-gray-800">Información Personal</h2>
                 <div className="grid grid-cols-2 gap-4 text-gray-700">
@@ -375,7 +372,6 @@ const EditarPaciente = () => {
                 </div>
               </div>
 
-              {/* Estado del Paciente */}
               <div className="bg-gray-50 p-6 rounded-lg shadow-md space-y-4">
                 <div className="flex items-center space-x-4">
                   <FaFileAlt className="text-green-600 text-2xl" />
@@ -414,8 +410,8 @@ const EditarPaciente = () => {
 
                 <button
                   type="button"
-                  onClick={confirmarAvanzarEstado} // Muestra el pop-up de confirmación
-                  disabled={editData.estado_paciente === 'A' || editData.estado_paciente === 'R'} // Deshabilitar si el estado es "Alta" o "Rechazado"
+                  onClick={confirmarAvanzarEstado}
+                  disabled={editData.estado_paciente === 'A' || editData.estado_paciente === 'R'}
                   className={`${
                     editData.estado_paciente === 'A' || editData.estado_paciente === 'R'
                       ? 'bg-gray-400 cursor-not-allowed'
@@ -426,7 +422,6 @@ const EditarPaciente = () => {
                 </button>
               </div>
 
-              {/* Detalles Médicos */}
               <div className="bg-gray-50 p-6 rounded-lg shadow-md space-y-4">
                 <div className="flex items-center space-x-4">
                   <FaNotesMedical className="text-green-600 text-2xl" />
@@ -442,7 +437,7 @@ const EditarPaciente = () => {
                       name="doctor"
                       value={editData.doctor}
                       onChange={handleInputChange}
-                      disabled={disabledFields.doctor} // Deshabilitar si ya se ha editado
+                      disabled={disabledFields.doctor}
                       className="w-full p-2 border rounded mt-2"
                     />
                   </div>
@@ -455,7 +450,7 @@ const EditarPaciente = () => {
                       name="fecha_cirugia"
                       value={editData.fecha_cirugia}
                       onChange={handleInputChange}
-                      disabled={disabledFields.fecha_cirugia} // Deshabilitar si ya se ha editado
+                      disabled={disabledFields.fecha_cirugia}
                       className="w-full p-2 border rounded mt-2"
                     />
                   </div>
@@ -468,7 +463,7 @@ const EditarPaciente = () => {
                       name="fecha_evaluacion"
                       value={editData.fecha_evaluacion}
                       onChange={handleInputChange}
-                      disabled={disabledFields.fecha_evaluacion} // Deshabilitar si ya se ha editado
+                      disabled={disabledFields.fecha_evaluacion}
                       className="w-full p-2 border rounded mt-2"
                     />
                   </div>
@@ -481,7 +476,7 @@ const EditarPaciente = () => {
                       name="control_post_operatorio"
                       value={editData.control_post_operatorio}
                       onChange={handleInputChange}
-                      disabled={disabledFields.control_post_operatorio} // Deshabilitar si ya se ha editado
+                      disabled={disabledFields.control_post_operatorio}
                       className="w-full p-2 border rounded mt-2"
                     />
                   </div>
@@ -494,14 +489,13 @@ const EditarPaciente = () => {
                       name="control_mes"
                       value={editData.control_mes}
                       onChange={handleInputChange}
-                      disabled={disabledFields.control_mes} // Deshabilitar si ya se ha editado
+                      disabled={disabledFields.control_mes}
                       className="w-full p-2 border rounded mt-2"
                     />
                   </div>
                 </div>
               </div>
 
-              {/* Historial de Llamados */}
               <div className="bg-gray-50 p-6 rounded-lg shadow-md space-y-4">
                 <div className="flex items-center space-x-4">
                   <FaCalendarAlt className="text-green-600 text-2xl" />
@@ -517,7 +511,7 @@ const EditarPaciente = () => {
                       name="reg_segundo_llamado"
                       value={editData.reg_segundo_llamado}
                       onChange={handleInputChange}
-                      disabled={disabledFields.reg_segundo_llamado} // Deshabilitar si ya se ha editado
+                      disabled={disabledFields.reg_segundo_llamado}
                       className="w-full p-2 border rounded mt-2"
                     />
                   </div>
@@ -530,14 +524,13 @@ const EditarPaciente = () => {
                       name="reg_tercer_llamado"
                       value={editData.reg_tercer_llamado}
                       onChange={handleInputChange}
-                      disabled={disabledFields.reg_tercer_llamado} // Deshabilitar si ya se ha editado
+                      disabled={disabledFields.reg_tercer_llamado}
                       className="w-full p-2 border rounded mt-2"
                     />
                   </div>
                 </div>
               </div>
 
-              {/* Observación (siempre habilitada) */}
               <div className="bg-gray-50 p-6 rounded-lg shadow-md space-y-4">
                 <label>
                   <strong>Observación:</strong>
@@ -551,7 +544,6 @@ const EditarPaciente = () => {
                 />
               </div>
 
-              {/* Botones Cancelar, Guardar Cambios, Rechazar Paciente */}
               <div className="flex justify-center space-x-4 mt-8">
                 <button
                   type="button"
