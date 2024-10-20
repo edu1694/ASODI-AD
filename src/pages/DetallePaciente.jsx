@@ -144,7 +144,7 @@ const DetallePaciente = () => {
                 <h2 className="text-2xl font-semibold text-gray-800">Historial de Llamados</h2>
               </div>
               <div className="grid grid-cols-2 gap-4 text-gray-700">
-                <p><strong>Fecha de Recepción:</strong> {paciente.fecha_recepcion}</p>
+                <p><strong>Fecha Cambio De Estado:</strong> {paciente.fecha_recepcion}</p>
                 <p><strong>Primer Llamado:</strong> {paciente.reg_primer_llamado || 'No registrado'}</p>
                 <p><strong>Fecha SIC:</strong> {paciente.fecha_sic}</p>
                 <p><strong>Segundo Llamado:</strong> {paciente.reg_segundo_llamado || 'No registrado'}</p>

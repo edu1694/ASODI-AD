@@ -70,7 +70,7 @@ const ListaPacientes = () => {
                 <th className="py-3 px-6 text-left font-semibold">RUT</th>
                 <th className="py-3 px-6 text-left font-semibold">Nombre</th>
                 <th className="py-3 px-6 text-left font-semibold">Apellido</th>
-                <th className="py-3 px-6 text-left font-semibold">Fecha Recepción</th>
+                <th className="py-3 px-6 text-left font-semibold">Fecha Cambio De Estado</th>
                 <th className="py-3 px-6 text-left font-semibold">Convenio</th>
                 <th className="py-3 px-6 text-left font-semibold">Estado Paciente</th>
               </tr>
