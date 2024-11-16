@@ -17,14 +17,91 @@ import {
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, ArcElement, Tooltip, Legend);
 
+const AlertaPacientes = ({ pacientes }) => {
+  return (
+    <div className="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-4 rounded">
+      <h3 className="font-bold text-lg">Pacientes con llamada pendiente cercana</h3>
+      {pacientes.length > 0 ? (
+        <ul>
+          {pacientes.map((paciente) => (
+            <li key={paciente.id_planilla} className="mt-2">
+              {paciente.riesgoAlto && <span className="text-red-700 font-bold mr-2">⚠️</span>}
+              {paciente.nombre_paciente} {paciente.apellido_paciente} - Llamada en {paciente.horasRestantes.display}
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <p>No hay pacientes con llamadas pendientes próximas.</p>
+      )}
+    </div>
+  );
+};
+
 const DashboardPage = () => {
   const [patientStats, setPatientStats] = useState({ Pendiente: 0, EnProceso: 0, Operado: 0, Alta: 0, Rechazado: 0 });
   const [monthlyPatientStats, setMonthlyPatientStats] = useState({});
   const [requestStats, setRequestStats] = useState({ Pendiente: 0, Aprobada: 0, Rechazada: 0 });
   const [selectedMonth, setSelectedMonth] = useState("");
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
+  const [pacientesAlerta, setPacientesAlerta] = useState([]);
 
   useEffect(() => {
+    const fetchPacientes = async () => {
+      try {
+        const responsePacientes = await axios.get(`${baseUrl}/asodi/v1/planillas-convenio/`);
+        const responseConvenios = await axios.get(`${baseUrl}/asodi/v1/convenios/`);
+        
+        if (responsePacientes.status === 200 && responseConvenios.status === 200) {
+          const pacientesPendientes = responsePacientes.data.filter(paciente => paciente.estado_paciente === 'P');
+          const convenios = responseConvenios.data;
+
+          const alertaPacientes = pacientesPendientes.filter(paciente => {
+            const convenio = convenios.find(conv => conv.nombre_convenio === paciente.convenios);
+
+            if (!convenio || !convenio.horas_llamado) return false;
+
+            const fechaRecepcion = new Date(paciente.fecha_recepcion);
+            const ahora = new Date();
+            const diferenciaMilisegundos = ahora - fechaRecepcion;
+            const tiempoTranscurridoEnHoras = diferenciaMilisegundos / 1000 / 60 / 60;
+
+            const horasRestantes = convenio.horas_llamado - tiempoTranscurridoEnHoras;
+
+            if (horasRestantes <= 0) {
+              paciente.riesgoAlto = true;
+              return true;
+            } else if (horasRestantes <= 4) {
+              paciente.riesgoAlto = false;
+              return true;
+            }
+
+            return false;
+          }).map(paciente => {
+            const convenio = convenios.find(conv => conv.nombre_convenio === paciente.convenios);
+            const fechaRecepcion = new Date(paciente.fecha_recepcion);
+            const ahora = new Date();
+            const diferenciaMilisegundos = ahora - fechaRecepcion;
+            const tiempoTranscurridoEnHoras = diferenciaMilisegundos / 1000 / 60 / 60;
+            const horasRestantes = convenio.horas_llamado - tiempoTranscurridoEnHoras;
+
+            const horas = Math.floor(horasRestantes);
+            const minutos = Math.floor((horasRestantes - horas) * 60);
+
+            return {
+              ...paciente,
+              horasRestantes: {
+                display: `${horas} horas y ${minutos} minutos`
+              }
+            };
+          });
+
+          setPacientesAlerta(alertaPacientes);
+        }
+      } catch (error) {
+        console.error("Error al obtener los datos de pacientes o convenios:", error);
+      }
+    };
+
     const fetchPatientData = async () => {
       try {
         const response = await axios.get(`${baseUrl}/asodi/v1/planillas-convenio/`);
@@ -89,6 +166,7 @@ const DashboardPage = () => {
       }
     };
 
+    fetchPacientes();
     fetchPatientData();
     fetchRequestData();
   }, [selectedMonth, selectedYear]);
@@ -138,6 +216,8 @@ const DashboardPage = () => {
       <Sidebar />
 
       <div className="flex-1 p-10">
+        <AlertaPacientes pacientes={pacientesAlerta} />
+
         {/* Header with Filters */}
         <div className="flex items-center mb-10">
           <h1 className="text-3xl font-bold mr-4">Dashboard de Pacientes</h1>
