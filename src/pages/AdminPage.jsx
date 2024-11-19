@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import Sidebar from '../components/Sidebar';
+import Sidebar from '../components/SidebarAdmin';
 import { Pie, Line } from 'react-chartjs-2';
 import axios from 'axios';
 import { baseUrl } from '../api/asodi.api.js';
